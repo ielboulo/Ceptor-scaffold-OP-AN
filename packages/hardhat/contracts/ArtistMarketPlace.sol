@@ -22,10 +22,42 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 	error ErrorIncompleteArtWorkDetails();
 	error ErrorArtistNotFound(address artistWallet);
 	error ErrorArtworkNotInTheSuppliedIndex();
+	error ErrorUserNotFound(address userWallet);
+	error ErrorNotEnoughFundsSentToContract(uint256 amount);
+	error ErrorRevertIncompleteCommisionDetails();
+	error ErrorUserAlreadyExsits(address wallet);
+	error ErrorCommisionFlowNotFound();
+	error ErrorNotTheArtistGiveProgress(address sender);
+	error ErrorArtCommisionAlreadyDecided();
+	error ErrorTheCommisionFlowHasNotBeenAccepted();
+	error ErrorClientAlreadyCommentonTask();
 
 	enum ArtType {
 		AIGenerated,
 		HandDrawn
+	}
+
+	enum ContractStatus {
+		NotDecided,
+		Accepted,
+		Declined,
+		Revoked
+	}
+
+	enum TaskStatus {
+		OnGoing,
+		Finished
+	}
+
+	enum UserType {
+		Artist,
+		Client
+	}
+
+	enum ClientApproval {
+		NotGivenYet,
+		Approved,
+		Decline
 	}
 
 	struct RequestStatus {
@@ -52,16 +84,49 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 		uint256 numberoFArts;
 		uint256 numberFeaturedTimes;
 		uint256[] artworks;
+		uint256[] commisions;
 	}
 
+	struct Client {
+		address wallet;
+		uint256[] favoriteArts;
+		uint256[] commisions;
+	}
+
+	struct User {
+		UserType userType;
+		address wallet;
+		uint256 clientID;
+		uint256 artistID;
+	}
+
+	struct TaskProgress {
+		string progressUrl;
+		TaskStatus taskStatus;
+		ClientApproval clientApproval;
+	}
+
+	struct ArtCommision {
+		address client;
+		address artist;
+		string description;
+		uint256 budget;
+		ContractStatus contractStatus;
+		uint256[] taskProgress;
+	}
+
+	mapping(address => User) public s_users;
 	mapping(uint256 => RequestStatus) public s_requests;
 	//artist address matched to artist commision held by the contract
 	mapping(address => uint256) public s_artistCommision;
 	//mapping of address to Artist array index
-	mapping(address => uint) public s_artistIndex;
+	//mapping(address => uint) public s_artistIndex;
 	//artwork
 	ArtWork[] public s_artworks;
 	Artist[] public s_artist;
+	Client[] public s_client;
+	ArtCommision[] public s_artCommision;
+	TaskProgress[] public s_taskProgress;
 
 	//VRF Sepolia Chain
 	IVRFCoordinatorV2Plus COORDINATOR;
@@ -99,11 +164,29 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 		}
 	}
 
+	modifier checkArtCommisionFlow(ArtCommision memory artCommision) {
+		uint256 clientID = s_users[artCommision.client].clientID;
+		uint256 artistID = s_users[artCommision.client].artistID;
+		if (s_client[clientID].wallet == address(0)) {
+			revert ErrorUserNotFound(artCommision.client);
+		}
+		if (s_artist[artistID].wallet == address(0)) {
+			revert ErrorUserNotFound(artCommision.artist);
+		}
+		if (artCommision.budget < msg.value) {
+			revert ErrorNotEnoughFundsSentToContract(msg.value);
+		}
+		if (bytes(artCommision.description).length == 0) {
+			revert ErrorRevertIncompleteCommisionDetails();
+		}
+		_;
+	}
+
 	constructor(uint256 subscriptionId) VRFConsumerBaseV2Plus(vrfCoordinator) {
 		COORDINATOR = IVRFCoordinatorV2Plus(vrfCoordinator);
 		s_subscriptionId = subscriptionId;
 		//create Text artist data here
-		_createTestArtist();
+		//_createTestArtist();
 	}
 
 	function getRandomWords() external returns (uint256 requestId) {
@@ -157,14 +240,13 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 			s_artistCommision[msg.sender] = 0;
 			(bool success, ) = payable(msg.sender).call{ value: commision }("");
 			require(success, "commision withdrawal failed");
-		}else{
+		} else {
 			revert ErrorNoCommisionToWithdraw();
 		}
-		
 	}
 
 	function buyArtWork(uint256 artWorkIndex) public payable {
-		if ( artWorkIndex > s_artworks.length || s_artworks.length == 0 ){
+		if (artWorkIndex > s_artworks.length || s_artworks.length == 0) {
 			revert ErrorArtworkNotInTheSuppliedIndex();
 		}
 		ArtWork memory artwork = s_artworks[artWorkIndex];
@@ -177,10 +259,20 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 				artwork.cost
 			);
 		}
+		//create a client if it does not exist
+		if (s_users[msg.sender].wallet == address(0)) {
+			uint256[] memory empty;
+			//create a new Client
+			Client memory _client = Client({
+				wallet: msg.sender,
+				favoriteArts: empty,
+				commisions: empty
+			});
+			createClientUser(_client);
+		}
 		//buy the art
 		s_artworks[artWorkIndex].owner = msg.sender;
 		s_artistCommision[artwork.creator] += msg.value;
-
 	}
 
 	function saveArtWorkDetails(
@@ -190,7 +282,8 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 		uint256 index = s_artworks.length;
 		s_artworks.push(artwork);
 		//update the artist works array with the artwork index
-		uint256 artistIndexInArray = s_artistIndex[artwork.creator];
+
+		uint256 artistIndexInArray = s_users[artwork.creator].artistID;
 		Artist storage artist = s_artist[artistIndexInArray];
 		if (artist.wallet != artwork.creator) {
 			revert ErrorArtistNotFound(artwork.creator);
@@ -198,43 +291,178 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 		//we good save the index in the artist work array
 		uint256 artworkIndex = index == 0 ? index : index + 1;
 		artist.artworks.push(artworkIndex);
-		//s_artist[artistIndexInArray].artworks.push(artworkIndex);
-		//console.log("artist artwork length: ", s_artist[artistIndexInArray].artworks.length);
+		artist.numberoFArts++;
 	}
 
-	function getArtist(uint256 index) public view returns (Artist memory artist) {
+	function getArtist(
+		uint256 index
+	) public view returns (Artist memory artist) {
 		return s_artist[index];
 	}
 
-	function _createTestArtist() private {
-		uint256[] memory artworks;
-		Artist memory artist1 = Artist({
-			name: "Jamie Bones",
-			wallet: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266,
-			style: ArtType.HandDrawn,
-			numberoFArts: 0,
-			numberFeaturedTimes: 0,
-			artworks: artworks
+	function getClient(
+		uint256 index
+	) public view returns (Client memory client) {
+		return s_client[index];
+	}
+
+	function createArtistUser(Artist memory newArtist) public {
+		//check if the address is not in the user
+		if (s_users[newArtist.wallet].wallet != address(0)) {
+			revert ErrorUserAlreadyExsits(newArtist.wallet);
+		}
+		//create and push the artist into the Artist array and save the index in the user mapping
+		uint256 index = s_artist.length;
+		index = index == 0 ? index : index + 1;
+		s_artist.push(newArtist);
+		//create a User
+		User memory _newUser = User({
+			wallet: newArtist.wallet,
+			userType: UserType.Artist,
+			artistID: index,
+			clientID: 0
 		});
-		Artist memory artist2 = Artist({
-			name: "Jamie Foster",
-			wallet: 0x5cBEa346278d288207Fd4714E18551aF37441c15,
-			style: ArtType.AIGenerated,
-			numberoFArts: 0,
-			numberFeaturedTimes: 0,
-			artworks: artworks
+		s_users[newArtist.wallet] = _newUser;
+	}
+
+	function createClientUser(Client memory newClient) public {
+		//check if the address is not in the user
+		if (s_users[newClient.wallet].wallet != address(0)) {
+			revert ErrorUserAlreadyExsits(newClient.wallet);
+		}
+		uint256 index = s_client.length;
+		index = index == 0 ? index : index + 1;
+		s_client.push(newClient);
+		//create a User
+		User memory _newUser = User({
+			wallet: newClient.wallet,
+			userType: UserType.Client,
+			artistID: 0,
+			clientID: index
 		});
-		//save the index in the mapping
-		s_artist.push(artist1);
-		s_artistIndex[0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266] =
-			s_artist.length -
-			1;
-		s_artist.push(artist2);
-		s_artistIndex[0x5cBEa346278d288207Fd4714E18551aF37441c15] =
-			s_artist.length -
-			1;
+		s_users[newClient.wallet] = _newUser;
+	}
+
+	function startNewArtCommision(
+		ArtCommision memory artCommision
+	) public payable checkArtCommisionFlow(artCommision) {
+		//save the commison in the array
+		s_artCommision.push(artCommision);
+		uint256 savedIndex = s_artCommision.length - 1;
+		//save the index in the commision array of both the client and artist
+		uint256 artistIndex = s_users[artCommision.artist].artistID;
+		uint256 clientIndex = s_users[artCommision.client].clientID;
+		Artist storage _artist = s_artist[artistIndex];
+		_artist.commisions.push(savedIndex);
+		Client storage _client = s_client[clientIndex];
+		_client.commisions.push(savedIndex);
+	}
+
+	function acceptDeclineArtCommision(
+		uint256 artCommisionID,
+		ContractStatus contractStatus
+	) public {
+		//get the artComission
+		ArtCommision memory artCommision = s_artCommision[artCommisionID];
+		if (
+			artCommision.artist == msg.sender &&
+			artCommision.contractStatus == ContractStatus.NotDecided
+		) {
+			s_artCommision[artCommisionID].contractStatus = contractStatus;
+		} else {
+			//revert already
+			revert ErrorArtCommisionAlreadyDecided();
+		}
+	}
+
+	function saveNewTaskProgress(
+		uint256 commisionIndex,
+		TaskProgress memory taskProgress
+	) public {
+		ArtCommision memory artCommision = s_artCommision[commisionIndex];
+		if (
+			artCommision.contractStatus == ContractStatus.NotDecided ||
+			artCommision.contractStatus == ContractStatus.Declined
+		) {
+			revert ErrorTheCommisionFlowHasNotBeenAccepted();
+		}
+		if (artCommision.artist == address(0)) {
+			revert ErrorCommisionFlowNotFound();
+		}
+		if (artCommision.artist != msg.sender) {
+			revert ErrorNotTheArtistGiveProgress(msg.sender);
+		}
+
+		uint256 index = s_taskProgress.length;
+		index = index == 0 ? index : index + 1;
+		s_taskProgress.push(taskProgress);
+		//save the task progress
+		s_artCommision[commisionIndex].taskProgress.push(index);
+	}
+
+	function updateProgressReport(
+		uint256 artCommisionID,
+		ClientApproval _clientApproval
+	) public {
+		//get the progress report
+		ArtCommision memory artCommision = s_artCommision[artCommisionID];
+		//get the last comission without a client input
+		uint256 progressID = artCommision.taskProgress[
+			artCommision.taskProgress.length - 1
+		];
+		TaskProgress storage taskProgress = s_taskProgress[progressID];
+		//check if the client has not commented;
+		if (taskProgress.clientApproval == ClientApproval.NotGivenYet) {
+			//save the client response
+			// 	NotGivenYet,
+			// Approved,
+			// Decline
+			if (
+				_clientApproval == ClientApproval.Approved &&
+				taskProgress.taskStatus == TaskStatus.Finished
+			) {
+				//transfer the commision to the artist
+				//add the art to the artist collection and the client as the owner
+				//save the taskProgress update sent
+				 _saveArtworkCommisionFinalized(artCommisionID, progressID);
+			} else if ( taskProgress.taskStatus == TaskStatus.OnGoing ){
+				taskProgress.clientApproval = _clientApproval;
+			}
+			//if progress == finish and client response == approved
+			//save the comission in the commision array under the artist
+		} else {
+			//error already commented
+			revert ErrorClientAlreadyCommentonTask();
+		}
+	}
+
+	function _saveArtworkCommisionFinalized(
+		uint256 artCommisionID,
+		uint256 taskProgressID
+	) private {
+		//create new art work
+		TaskProgress storage taskProgress = s_taskProgress[taskProgressID];
+
+		ArtCommision memory artCommision = s_artCommision[artCommisionID];
+		User memory artistUser = s_users[artCommision.artist];
+		Artist storage artist = s_artist[artistUser.artistID];
+
+		ArtWork memory artwork = ArtWork({
+			url: taskProgress.progressUrl,
+			artType: artist.style,
+			cost: artCommision.budget,
+			likes: 0,
+			creator: artCommision.artist,
+			owner: artCommision.client
+		});
+
+		//save the artwork in the artwork Array
+		s_artworks.push(artwork);
+		//transfer the money to the commisions array
+		s_artistCommision[artCommision.artist] += artCommision.budget;
+		//finally save the taskProgress
+		taskProgress.clientApproval = ClientApproval.Approved;
 	}
 
 	receive() external payable {}
 }
-
