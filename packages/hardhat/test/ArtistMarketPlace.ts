@@ -8,37 +8,73 @@ describe("ArtistMarketPlace", function () {
 
   async function deployTokenFixture() {
     // Get the Signers here.
-    const [owner, addr1, addr2] = await ethers.getSigners();
+    const [owner, addr1, addr2, client, client2] = await ethers.getSigners();
     const artistMarketPlace = (await ethers.deployContract("ArtistMarketPlace", [subscriptionId])) as ArtistMarketPlace;
     await artistMarketPlace.waitForDeployment();
-    return { artistMarketPlace, owner, addr1, addr2 };
+    //create two users
+    const ArtistOne = {
+      wallet: await addr1.getAddress(),
+      name: "Julian Maschevelle",
+      style: 0,
+      numberoFArts: BigInt(0),
+      numberFeaturedTimes: BigInt(0),
+      artworks: [],
+      commisions: [] as bigint[],
+    } as unknown as ArtistMarketPlace.ArtistStruct;
+
+    const ArtistTwo = {
+      wallet: await addr2.getAddress(),
+      name: "Adah Catherine",
+      style: 1,
+      numberoFArts: BigInt(0),
+      numberFeaturedTimes: BigInt(0),
+      artworks: [] as bigint[],
+      commisions: [] as bigint[],
+    } as unknown as ArtistMarketPlace.ArtistStruct;
+
+    const ClientOne = {
+      wallet: await client2.getAddress(),
+      favoriteArts: [] as bigint[],
+      commisions: [] as bigint[],
+    } as unknown as ArtistMarketPlace.ClientStruct;
+
+    await artistMarketPlace.createArtistUser(ArtistOne);
+    await artistMarketPlace.createArtistUser(ArtistTwo);
+    await artistMarketPlace.createClientUser(ClientOne);
+
+    return { artistMarketPlace, owner, addr1, addr2, client, client2 };
   }
 
   describe("Deployment", function () {
     it("Should create test artists on deployment", async function () {
       const { artistMarketPlace } = await loadFixture(deployTokenFixture);
       const artist = await artistMarketPlace.s_artist(0);
-      expect(artist.name).to.equal("Jamie Bones");
-      expect(artist.style).to.equal(1);
+      expect(artist.name).to.be.equal("Julian Maschevelle");
+      expect((await artistMarketPlace.s_users(artist.wallet)).wallet).to.be.equal(artist.wallet);
     });
   });
+
   describe("ArtWorks", function () {
     it("Should allow saving artwork details", async function () {
-      const { artistMarketPlace } = await loadFixture(deployTokenFixture);
+      const { artistMarketPlace, addr1 } = await loadFixture(deployTokenFixture);
       const artwork = {
         url: "http://example.com/artwork1",
-        artType: 0, // AIGenerated
+        artType: BigInt(0), // AIGenerated
         cost: ethers.parseEther("1"),
-        likes: 0,
-        creator: "0x5cBEa346278d288207Fd4714E18551aF37441c15",
-        owner: "0x5cBEa346278d288207Fd4714E18551aF37441c15",
+        likes: BigInt(0),
+        creator: await addr1.getAddress(),
+        owner: await addr1.getAddress(),
       };
 
       await artistMarketPlace.saveArtWorkDetails(artwork);
       const savedArtwork = await artistMarketPlace.s_artworks(0);
+      const artistUser = await artistMarketPlace.s_users(await addr1.getAddress());
+      const artist = await artistMarketPlace.getArtist(artistUser.artistID);
       expect(savedArtwork.url).to.equal(artwork.url);
       expect(savedArtwork.cost.toString()).to.equal(artwork.cost.toString());
       expect(savedArtwork.creator).to.equal(artwork.creator);
+      expect(+artist.numberoFArts.toString()).to.be.equal(1);
+      expect(artist.artworks.length).to.be.equal(1);
     });
 
     it("Should revert if artwork details are incomplete", async function () {
@@ -57,84 +93,82 @@ describe("ArtistMarketPlace", function () {
       );
     });
 
-    it("Should retrieve the artist artworks", async function () {
-      const { artistMarketPlace } = await loadFixture(deployTokenFixture);
-      const artwork = {
-        url: "http://example.com/artwork1",
-        artType: 0, // AIGenerated
-        cost: ethers.parseEther("1"),
-        likes: 0,
-        creator: "0x5cBEa346278d288207Fd4714E18551aF37441c15",
-        owner: "0x5cBEa346278d288207Fd4714E18551aF37441c15",
-      };
-
-      await artistMarketPlace.saveArtWorkDetails(artwork);
-      const artistIndex = await artistMarketPlace.s_artistIndex(artwork.creator);
-      const artist = await artistMarketPlace.getArtist(+artistIndex.toString());
-      const artWorksArray = artist.artworks;
-      const savedArtwork = await artistMarketPlace.s_artworks(artWorksArray[0]);
-      expect(savedArtwork.url).to.equal(artwork.url);
-    });
-
     it("Should allow buying artwork", async function () {
-      const { artistMarketPlace, addr1, addr2, owner } = await loadFixture(deployTokenFixture);
+      const { artistMarketPlace, addr1, client } = await loadFixture(deployTokenFixture);
       const artwork = {
         url: "http://example.com/artwork1",
         artType: 0, // AIGenerated
         cost: ethers.parseEther("1"),
         likes: 0,
-        creator: await owner.getAddress(),
+        creator: await addr1.getAddress(),
         owner: addr1.address,
       };
 
       await artistMarketPlace.saveArtWorkDetails(artwork);
-      await artistMarketPlace.connect(addr2).buyArtWork(0, { value: artwork.cost });
+      await artistMarketPlace.connect(client).buyArtWork(0, { value: artwork.cost });
       const updatedArtwork = await artistMarketPlace.s_artworks(0);
-      expect(updatedArtwork.owner).to.equal(addr2.address);
-      const commission = await artistMarketPlace.s_artistCommision(owner.getAddress());
+      expect(updatedArtwork.owner).to.equal(client.address);
+      const commission = await artistMarketPlace.s_artistCommision(addr1.getAddress());
       expect(+commission.toString()).to.equal(+artwork.cost.toString());
     });
 
-    it("Should revert if insufficient amount is sent for buying artwork", async function () {
-      const { artistMarketPlace, addr1, addr2, owner } = await loadFixture(deployTokenFixture);
+    it("Should create client if it does not exist", async function () {
+      const { artistMarketPlace, addr1, client } = await loadFixture(deployTokenFixture);
       const artwork = {
         url: "http://example.com/artwork1",
         artType: 0, // AIGenerated
         cost: ethers.parseEther("1"),
         likes: 0,
-        creator: owner.getAddress(),
+        creator: await addr1.getAddress(),
+        owner: addr1.address,
+      };
+
+      await artistMarketPlace.saveArtWorkDetails(artwork);
+      await artistMarketPlace.connect(client).buyArtWork(0, { value: artwork.cost });
+      const createdClient = await artistMarketPlace.getClient(1);
+      expect(createdClient.wallet).to.be.equal(await client.getAddress());
+    });
+
+    it("Should revert if insufficient amount is sent for buying artwork", async function () {
+      const { artistMarketPlace, addr1, client } = await loadFixture(deployTokenFixture);
+      const artwork = {
+        url: "http://example.com/artwork1",
+        artType: 0, // AIGenerated
+        cost: ethers.parseEther("1"),
+        likes: 0,
+        creator: addr1.getAddress(),
         owner: addr1.address,
       };
 
       await artistMarketPlace.saveArtWorkDetails(artwork);
       await expect(
-        artistMarketPlace.connect(addr2).buyArtWork(0, { value: ethers.parseEther("0.5") }),
+        artistMarketPlace.connect(client).buyArtWork(0, { value: ethers.parseEther("0.5") }),
       ).to.be.revertedWithCustomError(artistMarketPlace, "ErrorAmountNotSufficientToBuyArtwork");
     });
 
     it("Should revert if artwork does not exist when buying", async function () {
-      const { artistMarketPlace, addr2 } = await loadFixture(deployTokenFixture);
+      const { artistMarketPlace, client } = await loadFixture(deployTokenFixture);
       await expect(
-        artistMarketPlace.connect(addr2).buyArtWork(0, { value: ethers.parseEther("1") }),
+        artistMarketPlace.connect(client).buyArtWork(0, { value: ethers.parseEther("1") }),
       ).to.be.revertedWithCustomError(artistMarketPlace, "ErrorArtworkNotInTheSuppliedIndex");
     });
 
     it("Should allow withdrawing commission", async function () {
-      const { artistMarketPlace, addr2, owner } = await loadFixture(deployTokenFixture);
+      const { artistMarketPlace, addr1, client } = await loadFixture(deployTokenFixture);
       const artwork = {
         url: "http://example.com/artwork1",
         artType: 0, // AIGenerated
         cost: ethers.parseEther("1"),
         likes: 0,
-        creator: owner.getAddress(),
-        owner: owner.getAddress(),
+        creator: addr1.getAddress(),
+        owner: addr1.getAddress(),
       };
 
       await artistMarketPlace.saveArtWorkDetails(artwork);
-      await artistMarketPlace.connect(addr2).buyArtWork(0, { value: artwork.cost });
-      const initialBalance = await ethers.provider.getBalance(owner.getAddress());
-      await artistMarketPlace.connect(owner).withdrawCommision();
-      const finalBalance = await ethers.provider.getBalance(owner.getAddress());
+      await artistMarketPlace.connect(client).buyArtWork(0, { value: artwork.cost });
+      const initialBalance = await ethers.provider.getBalance(addr1.getAddress());
+      await artistMarketPlace.connect(addr1).withdrawCommision();
+      const finalBalance = await ethers.provider.getBalance(addr1.getAddress());
       expect(finalBalance).to.be.gt(initialBalance);
     });
 
@@ -145,5 +179,172 @@ describe("ArtistMarketPlace", function () {
         "ErrorNoCommisionToWithdraw",
       );
     });
+  });
+
+  describe("Commision Flow", function () {
+    it("Should allow client request for an artwork", async function () {
+      const { artistMarketPlace, addr1, client2 } = await loadFixture(deployTokenFixture);
+      const commisionFlow = {
+        client: await client2.getAddress(),
+        artist: await addr1.getAddress(),
+        description: "url pointing to IPFS",
+        budget: ethers.parseEther("2"),
+        contractStatus: 0,
+        taskProgress: [] as bigint[],
+      };
+
+      await artistMarketPlace.connect(client2).startNewArtCommision(commisionFlow);
+      const clientUser = await artistMarketPlace.s_users(client2.getAddress());
+      const artistUser = await artistMarketPlace.s_users(addr1.getAddress());
+      const client = await artistMarketPlace.getClient(clientUser.clientID);
+      const artist = await artistMarketPlace.getArtist(artistUser.artistID);
+      expect(client.commisions.length).to.be.equal(1);
+      expect(artist.commisions.length).to.be.equal(1);
+    });
+
+    it("Should update progress report", async function () {
+      const { artistMarketPlace, addr1, client2 } = await loadFixture(deployTokenFixture);
+      const commisionFlow = {
+        client: await client2.getAddress(),
+        artist: await addr1.getAddress(),
+        description: "url pointing to IPFS",
+        budget: ethers.parseEther("2"),
+        contractStatus: 0,
+        taskProgress: [] as bigint[],
+      };
+
+      // OnGoing, 0
+      // Finished, 1
+      // Abandoned 2
+
+      //NotGivenYet
+      //Approved,
+      //Decline
+      const taskProgress = {
+        progressUrl: "url-of-the-progress-drawing",
+        taskStatus: 1,
+        clientApproval: 0,
+      };
+
+      await artistMarketPlace.connect(client2).startNewArtCommision(commisionFlow);
+      await artistMarketPlace.connect(addr1).acceptDeclineArtCommision(0, 1);
+      await artistMarketPlace.connect(addr1).saveNewTaskProgress(0, taskProgress);
+      const commision = await artistMarketPlace.s_artCommision(0);
+      console.log("comission ", commision);
+      //expect(commision.taskProgress).to.be.equal(1)
+    });
+  });
+
+  describe("updateProgressReport", function () {
+    it("Should allow the artist to update the progress report for their commission", async function () {
+      const { artistMarketPlace, addr1, client2 } = await loadFixture(deployTokenFixture);
+      const commisionFlow = {
+        client: await client2.getAddress(),
+        artist: await addr1.getAddress(),
+        description: "url pointing to IPFS",
+        budget: ethers.parseEther("2"),
+        contractStatus: 0,
+        taskProgress: [] as bigint[],
+      };
+      const taskProgressData = {
+        progressUrl: "http://example.com/progress",
+        taskStatus: 0,
+        clientApproval: 0,
+      };
+
+      await artistMarketPlace.connect(client2).startNewArtCommision(commisionFlow);
+      await artistMarketPlace.connect(addr1).acceptDeclineArtCommision(0, 1);
+      await artistMarketPlace.connect(addr1).saveNewTaskProgress(0, taskProgressData);
+      await artistMarketPlace.connect(addr1).updateProgressReport(0, 1);
+      const progress = await artistMarketPlace.s_taskProgress(0);
+      expect(progress.clientApproval).to.equal(1); // Approved
+    });
+    it("Should update the artist commision after the client accepts the project", async function () {
+      const { artistMarketPlace, addr1, client2 } = await loadFixture(deployTokenFixture);
+      const commisionFlow = {
+        client: await client2.getAddress(),
+        artist: await addr1.getAddress(),
+        description: "url pointing to IPFS",
+        budget: ethers.parseEther("2"),
+        contractStatus: 0,
+        taskProgress: [] as bigint[],
+      };
+      const taskProgressData = {
+        progressUrl: "http://example.com/progress",
+        taskStatus: 1,
+        clientApproval: 0,
+      };
+
+      await artistMarketPlace.connect(client2).startNewArtCommision(commisionFlow);
+      await artistMarketPlace.connect(addr1).acceptDeclineArtCommision(0, 1);
+      await artistMarketPlace.connect(addr1).saveNewTaskProgress(0, taskProgressData);
+      const commisionBefore = await artistMarketPlace.s_artistCommision(addr1.getAddress());
+      await artistMarketPlace.connect(addr1).updateProgressReport(0, 1);
+      const commisionAfter = await artistMarketPlace.s_artistCommision(addr1.getAddress());
+      expect(+commisionAfter.toString()).to.be.gt(+commisionBefore.toString());
+    });
+
+    it("should revert if client already commented", async function () {
+      const { artistMarketPlace, addr1, client2 } = await loadFixture(deployTokenFixture);
+      const commisionFlow = {
+        client: await client2.getAddress(),
+        artist: await addr1.getAddress(),
+        description: "url pointing to IPFS",
+        budget: ethers.parseEther("2"),
+        contractStatus: 0,
+        taskProgress: [] as bigint[],
+      };
+      const taskProgressData = {
+        progressUrl: "http://example.com/progress",
+        taskStatus: 0,
+        clientApproval: 0,
+      };
+
+      await artistMarketPlace.connect(client2).startNewArtCommision(commisionFlow);
+      await artistMarketPlace.connect(addr1).acceptDeclineArtCommision(0, 1);
+      await artistMarketPlace.connect(addr1).saveNewTaskProgress(0, taskProgressData);
+      await artistMarketPlace.connect(addr1).updateProgressReport(0, 1);
+      await expect(artistMarketPlace.connect(addr1).updateProgressReport(0, 1)).to.be.revertedWithCustomError(
+        artistMarketPlace,
+        "ErrorClientAlreadyCommentonTask",
+      );
+    });
+
+    // it("should add the artwork to the array and commision if approved by the Client", async function () {
+    //   const { artistMarketPlace, addr1, client2 } = await loadFixture(deployTokenFixture);
+    //   const commisionFlow = {
+    //     client: await client2.getAddress(),
+    //     artist: await addr1.getAddress(),
+    //     description: "url pointing to IPFS",
+    //     budget: ethers.parseEther("2"),
+    //     contractStatus: 0,
+    //     taskProgress: [] as bigint[],
+    //   };
+    //   const taskProgressData = {
+    //     progressUrl: "http://example.com/progress",
+    //     taskStatus: 1,
+    //     clientApproval: 0,
+    //   };
+
+    // //   const clientBeforeUser = await artistMarketPlace.s_users(client2.getAddress());
+    // //   const artistBeforeUser = await artistMarketPlace.s_users(addr1.getAddress());
+    // //   const clientBefore = await artistMarketPlace.getClient(clientBeforeUser.clientID);
+    // //   const artistBefore = await artistMarketPlace.getArtist(artistBeforeUser.artistID);
+    // //   //expect(clientBefore.commisions.length).to.be.equal(1);
+    // //   expect(artistBefore.commisions.length).to.be.equal(1);
+    //   await artistMarketPlace.connect(client2).startNewArtCommision(commisionFlow);
+    //   await artistMarketPlace.connect(addr1).acceptDeclineArtCommision(0, 1);
+    //   await artistMarketPlace.connect(addr1).saveNewTaskProgress(0, taskProgressData);
+    //   await artistMarketPlace.connect(addr1).updateProgressReport(0, 1);
+    //   const clientUser = await artistMarketPlace.s_users(client2.getAddress());
+    //   const artistUser = await artistMarketPlace.s_users(addr1.getAddress());
+    //   const client = await artistMarketPlace.getClient(clientUser.clientID);
+    //   const artist = await artistMarketPlace.getArtist(artistUser.artistID);
+
+    //   console.log("clien", client, artist)
+
+    //   expect(client.commisions.length).to.be.equal(1);
+    //   expect(artist.commisions.length).to.be.equal(1);
+    // });
   });
 });
