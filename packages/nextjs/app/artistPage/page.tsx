@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Filter from "../components/ui/filter";
-import ProductCard from "../components/ui/product-card";
-import Search from "../components/ui/search";
-import Sort from "../components/ui/sort";
-import Pagination from "~~/components/layout/Pagination";
+import Image from "next/image";
+import Artist from "../../components/assets/artist.jpg";
+import Pagination from "../../components/layout/Pagination";
+import ProductCard from "../../components/ui/product-card";
+import { Heart } from "lucide-react";
+import { Button } from "~~/components/ui/button";
 
 const products = [
   {
@@ -100,42 +101,42 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen">
-      <div className="w-full mx-auto px-4 md:px-6">
-        <div className="flex justify-end py-5 md:py-5 space-x-6">
-          <Search placeholder="Search Artwork" className="w-[610px]" />
-          <Sort />
+    <main>
+      <div className="mx-32">
+        <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-4 my-20">
+          <div className="flex-shrink-0">
+            <Image
+              alt="artist image"
+              className="object-cover h-full w-full md:w-auto md:h-[400px] group-hover:opacity-50 transition-opacity"
+              src={Artist}
+              width={400}
+              height={400}
+            />
+          </div>
+          <div className="flex flex-col items-start space-y-2 md:space-y-4">
+            <h1 className="text-5xl font-bold font-milonga ml-10">Artist Name</h1>
+            <p className="text-base text-white ml-10 w-[630px]">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales porta semper. Vivamus dapibus lorem
+              posuere dui semper, et malesuada dui lacinia.
+            </p>
+            <div className="ml-10 flex">
+              <Heart className="fill-white mr-2.5" />
+              <span>Follow This Artist</span>
+            </div>
+            {/* transparent div for vertical margin */}
+            <div className="h-[168px]"></div>
+            {/* button */}
+            <div className="ml-10 w-[400px]">
+              <Button variant="default" size={"lg"} className="w-full text-2xl">
+                Commission This Artist
+              </Button>
+            </div>
+          </div>
         </div>
         <div className="flex flex-col md:flex-row items-start">
-          <div className="hidden md:block">
-            <Filter />
-          </div>
           {/* Featured */}
           <div className="flex-1">
-            <h1 className="font-milonga text-5xl my-8">Featured</h1>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-10">
-              {currentProducts.map(product => (
-                <ProductCard
-                  key={product.artName}
-                  href={`/${product.artName}`}
-                  imgSrc={product.imgSrc}
-                  imgAlt={product.imgAlt}
-                  artist={product.artistName}
-                  title={product.artName}
-                  price={product.amount}
-                  tags={product.tags}
-                  isAI={true}
-                  isFavourite={false}
-                />
-              ))}
-            </div>
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
-          </div>
-        </div>
-        {/* Recommended Section */}
-        <div>
-          <div className="flex-1 md:ml-52">
-            <h1 className="font-milonga text-5xl my-8">Recommended</h1>
+            <h1 className="font-milonga text-5xl my-8">Gallery</h1>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-10">
               {currentProducts.map(product => (
                 <ProductCard
