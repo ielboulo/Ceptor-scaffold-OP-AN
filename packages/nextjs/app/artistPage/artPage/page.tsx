@@ -6,6 +6,7 @@ import Artist from "~~/components/assets/artist.jpg";
 import Pagination from "~~/components/layout/Pagination";
 import ProductCard from "~~/components/ui/artpageProductCard";
 import { Button } from "~~/components/ui/button";
+import ProductCard1 from "~~/components/ui/product-card";
 
 const products = [
   {
@@ -168,7 +169,7 @@ export default function Home() {
             <h1 className="font-milonga text-4xl my-8">More by Artist Name</h1>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-10">
               {currentProducts.map(product => (
-                <ProductCard
+                <ProductCard1
                   key={product.artName}
                   href={`/${product.artName}`}
                   imgSrc={product.imgSrc}
