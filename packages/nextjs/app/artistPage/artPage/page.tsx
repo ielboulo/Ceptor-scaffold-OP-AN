@@ -119,7 +119,7 @@ export default function Home() {
 
   return (
     <main>
-      <div className="mx-32">
+      <div className="mx-5 md:mx-32">
         <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-4 my-20">
           <div className="flex-shrink-0">
             <ProductCard
@@ -133,7 +133,7 @@ export default function Home() {
               description={products[0].description}
             />
           </div>
-          <div className="flex flex-col items-start space-y-2 md:space-y-4">
+          <div className="flex flex-col items-start space-y-2 md:space-y-4 mx-5">
             <div className="relative flex">
               <Image src={Artist} alt="artist profile picture" className="w-[86px] h-[83px]" />
               <div className="ml-4 ">
@@ -143,7 +143,7 @@ export default function Home() {
             </div>
 
             {/* transparent div for vertical margin */}
-            <div className="h-[140px]"></div>
+            <div className="md:h-[140px]"></div>
 
             {/* cost of art */}
             <div>
