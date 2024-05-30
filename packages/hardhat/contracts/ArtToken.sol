@@ -17,10 +17,7 @@ contract ArtToken is ERC20, AccessControl {
         _mint(to, amount);
     }
 
-    // Use default decimals = 18  - IEL : Would we change decimals ? TODO 
-    // function decimals() public pure override returns (uint8) {
-    //     return 2;
-    // }    
+    function decimals() public pure override returns (uint8) {
+         return 2;
+    }    
 }
-
-// Add swap function for ArtToken to USDT for example 
