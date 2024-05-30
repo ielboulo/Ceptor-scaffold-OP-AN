@@ -60,7 +60,7 @@ const ProductCard = ({
       <div className="flex-1 py-4">
         <div className="flex justify-between">
           <div className="w-[400px]">
-            <p className="font-bold tracking-tight">{description}</p>
+            <p className="font-bold tracking-tight order">{description}</p>
           </div>
         </div>
         <div className="flex flex-wrap gap-4 mt-2">

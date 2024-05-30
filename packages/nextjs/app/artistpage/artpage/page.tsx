@@ -6,6 +6,7 @@ import Artist from "~~/components/assets/artist.jpg";
 import Pagination from "~~/components/layout/Pagination";
 import ProductCard from "~~/components/ui/artpageProductCard";
 import { Button } from "~~/components/ui/button";
+import ProductCard1 from "~~/components/ui/product-card";
 
 const products = [
   {
@@ -119,7 +120,7 @@ export default function Home() {
 
   return (
     <main>
-      <div className="mx-32">
+      <div className="mx-5 md:mx-32">
         <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-4 my-20">
           <div className="flex-shrink-0">
             <ProductCard
@@ -133,7 +134,7 @@ export default function Home() {
               description={products[0].description}
             />
           </div>
-          <div className="flex flex-col items-start space-y-2 md:space-y-4">
+          <div className="flex flex-col items-start space-y-2 md:space-y-4 mx-5">
             <div className="relative flex">
               <Image src={Artist} alt="artist profile picture" className="w-[86px] h-[83px]" />
               <div className="ml-4 ">
@@ -143,7 +144,7 @@ export default function Home() {
             </div>
 
             {/* transparent div for vertical margin */}
-            <div className="h-[140px]"></div>
+            <div className="md:h-[140px]"></div>
 
             {/* cost of art */}
             <div>
@@ -168,7 +169,7 @@ export default function Home() {
             <h1 className="font-milonga text-4xl my-8">More by Artist Name</h1>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-10">
               {currentProducts.map(product => (
-                <ProductCard
+                <ProductCard1
                   key={product.artName}
                   href={`/${product.artName}`}
                   imgSrc={product.imgSrc}
