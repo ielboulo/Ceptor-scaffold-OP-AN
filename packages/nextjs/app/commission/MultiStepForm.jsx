@@ -16,6 +16,19 @@ import Step12 from "~~/components/steps/Step12";
 
 const MultiStepForm = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    imageType: "",
+    characterName: "",
+    characterSpecies: "",
+    characterClass: [],
+    characterBackground: "",
+    characterAppearance: "",
+    characterItems: "",
+    characterScene: "",
+    characterStory: "",
+    notesForArtist: "",
+    referenceImages: { selectedOptions: [], description: "" },
+  });
   const totalSteps = 12;
   const titles = [
     "Image Type",
@@ -32,12 +45,44 @@ const MultiStepForm = ({ isOpen, onClose }) => {
     "Review",
   ];
 
+  const handleDataChange = stepData => {
+    setFormData(prevData => ({ ...prevData, ...stepData }));
+  };
+
   const nextStep = () => setStep(prev => Math.min(prev + 1, totalSteps));
   const prevStep = () => setStep(prev => Math.max(prev - 1, 1));
 
   const handleStepChange = event => {
     const selectedStep = parseInt(event.target.value, 10);
     setStep(selectedStep);
+  };
+
+  const handleSubmit = () => {
+    const metadata = {
+      data: formData,
+      timestamp: new Date().toISOString(),
+      author: "formSubmissionApp",
+      tags: ["userData", "formSubmission"],
+    };
+    sendMetadataToIrys(metadata);
+    onClose();
+  };
+
+  const sendMetadataToIrys = metadata => {
+    fetch("https://...", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(metadata),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Success:", data);
+      })
+      .catch(error => {
+        console.error("Error:", error);
+      });
   };
 
   return (
@@ -93,18 +138,18 @@ const MultiStepForm = ({ isOpen, onClose }) => {
         </div>
         <div className="overflow-auto h-5/6">
           <div className="mb-4">
-            {step === 1 && <Step1 />}
-            {step === 2 && <Step2 />}
-            {step === 3 && <Step3 />}
-            {step === 4 && <Step4 />}
-            {step === 5 && <Step5 />}
-            {step === 6 && <Step6 />}
-            {step === 7 && <Step7 />}
-            {step === 8 && <Step8 />}
-            {step === 9 && <Step9 />}
-            {step === 10 && <Step10 />}
-            {step === 11 && <Step11 />}
-            {step === 12 && <Step12 />}
+            {step === 1 && <Step1 data={formData.imageType} onDataChange={handleDataChange} />}
+            {step === 2 && <Step2 data={formData.characterName} onDataChange={handleDataChange} />}
+            {step === 3 && <Step3 data={formData.characterSpecies} onDataChange={handleDataChange} />}
+            {step === 4 && <Step4 data={formData.characterClass} onDataChange={handleDataChange} />}
+            {step === 5 && <Step5 data={formData.characterBackground} onDataChange={handleDataChange} />}
+            {step === 6 && <Step6 data={formData.characterAppearance} onDataChange={handleDataChange} />}
+            {step === 7 && <Step7 data={formData.characterItems} onDataChange={handleDataChange} />}
+            {step === 8 && <Step8 data={formData.characterScene} onDataChange={handleDataChange} />}
+            {step === 9 && <Step9 data={formData.characterStory} onDataChange={handleDataChange} />}
+            {step === 10 && <Step10 data={formData.notesForArtist} onDataChange={handleDataChange} />}
+            {step === 11 && <Step11 data={formData.referenceImages} onDataChange={handleDataChange} />}
+            {step === 12 && <Step12 data={formData} />}
           </div>
         </div>
         <div className="flex gap-4 items-center justify-center mt-4">
@@ -116,12 +161,21 @@ const MultiStepForm = ({ isOpen, onClose }) => {
               Skip
             </button>
           )}
-          <button
-            onClick={nextStep}
-            className="bg-[#F8C522] hover:bg-[#F8C522]/90 text-black font-bold py-2 px-14 rounded-full"
-          >
-            Next: {titles[step] || "Send to Artist"}
-          </button>
+          {step === totalSteps ? (
+            <button
+              onClick={handleSubmit}
+              className="bg-[#F8C522] hover:bg-[#F8C522]/90 text-black font-bold py-2 px-14 rounded-full"
+            >
+              Submit
+            </button>
+          ) : (
+            <button
+              onClick={nextStep}
+              className="bg-[#F8C522] hover:bg-[#F8C522]/90 text-black font-bold py-2 px-14 rounded-full"
+            >
+              Next: {titles[step] || "Send to Artist"}
+            </button>
+          )}
         </div>
       </div>
     </Modal>

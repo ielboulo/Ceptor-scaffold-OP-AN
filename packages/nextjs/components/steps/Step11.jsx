@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Artwork1 from "../assets/artwork/artwork1.png";
 import Artwork2 from "../assets/artwork/artwork2.png";
@@ -13,11 +13,15 @@ import Artwork9 from "../assets/artwork/artwork9.png";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import Modal from "react-modal";
 
-const Step11 = () => {
+const Step11 = ({ data, onDataChange }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [selectedOptions, setSelectedOptions] = useState([]);
-  const [description, setDescription] = useState("");
+  const [selectedOptions, setSelectedOptions] = useState(data?.selectedOptions || []);
+  const [description, setDescription] = useState(data?.description || "");
+
+  useEffect(() => {
+    onDataChange({ selectedOptions, description });
+  }, [selectedOptions, description, onDataChange]);
 
   const openModal = index => {
     setSelectedIndex(index);
@@ -45,6 +49,7 @@ const Step11 = () => {
   };
 
   const artworks = [Artwork1, Artwork2, Artwork3, Artwork4, Artwork5, Artwork6, Artwork7, Artwork8, Artwork9];
+
   return (
     <>
       <div className="flex-grow flex flex-col justify-center items-center text-center">
@@ -97,78 +102,19 @@ const Step11 = () => {
               <div className="w-5/6 pl-4 flex flex-col">
                 <h2 className="text-xl font-bold">What do you like about this artwork?</h2>
                 <div className="mt-4 grid grid-cols-4 gap-4 m-4">
-                  <label className="block mb-2">
-                    <input
-                      type="checkbox"
-                      value="Art Style"
-                      checked={selectedOptions.includes("Art Style")}
-                      onChange={handleOptionChange}
-                    />
-                    <span className="ml-2">Art Style</span>
-                  </label>
-                  <label className="block mb-2">
-                    <input
-                      type="checkbox"
-                      value="Character"
-                      checked={selectedOptions.includes("Character")}
-                      onChange={handleOptionChange}
-                    />
-                    <span className="ml-2">Character</span>
-                  </label>
-                  <label className="block mb-2">
-                    <input
-                      type="checkbox"
-                      value="Background"
-                      checked={selectedOptions.includes("Background")}
-                      onChange={handleOptionChange}
-                    />
-                    <span className="ml-2">Background</span>
-                  </label>
-                  <label className="block mb-2">
-                    <input
-                      type="checkbox"
-                      value="Pose"
-                      checked={selectedOptions.includes("Pose")}
-                      onChange={handleOptionChange}
-                    />
-                    <span className="ml-2">Pose</span>
-                  </label>
-                  <label className="block mb-2">
-                    <input
-                      type="checkbox"
-                      value="Weapons"
-                      checked={selectedOptions.includes("Weapons")}
-                      onChange={handleOptionChange}
-                    />
-                    <span className="ml-2">Weapons</span>
-                  </label>
-                  <label className="block mb-2">
-                    <input
-                      type="checkbox"
-                      value="Armor"
-                      checked={selectedOptions.includes("Armor")}
-                      onChange={handleOptionChange}
-                    />
-                    <span className="ml-2">Armor</span>
-                  </label>
-                  <label className="block mb-2">
-                    <input
-                      type="checkbox"
-                      value="Items"
-                      checked={selectedOptions.includes("Items")}
-                      onChange={handleOptionChange}
-                    />
-                    <span className="ml-2">Items</span>
-                  </label>
-                  <label className="block mb-2">
-                    <input
-                      type="checkbox"
-                      value="Other"
-                      checked={selectedOptions.includes("Other")}
-                      onChange={handleOptionChange}
-                    />
-                    <span className="ml-2">Other</span>
-                  </label>
+                  {["Art Style", "Character", "Background", "Pose", "Weapons", "Armor", "Items", "Other"].map(
+                    option => (
+                      <label key={option} className="block mb-2">
+                        <input
+                          type="checkbox"
+                          value={option}
+                          checked={selectedOptions.includes(option)}
+                          onChange={handleOptionChange}
+                        />
+                        <span className="ml-2">{option}</span>
+                      </label>
+                    ),
+                  )}
                 </div>
                 <span className="text-[#d0d0d0] flex justify-center">
                   Is there anything else you like about this artwork that you would like to share with the artist?
@@ -179,7 +125,9 @@ const Step11 = () => {
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                 />
-                <button className="mt-4 px-4 py-2 bg-[#F8C522] text-black rounded-full">Select Artwork</button>
+                <button onClick={closeModal} className="mt-4 px-4 py-2 bg-[#F8C522] text-black rounded-full">
+                  Select Artwork
+                </button>
               </div>
               <button onClick={closeModal} className="absolute top-4 right-4 text-white hover:text-white/70">
                 <X className="h-6 w-6" />
