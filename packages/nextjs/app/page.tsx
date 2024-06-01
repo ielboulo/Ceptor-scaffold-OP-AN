@@ -1,11 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import Filter from "../components/ui/filter";
 import ProductCard from "../components/ui/product-card";
 import Search from "../components/ui/search";
-import Sort from "../components/ui/sort";
+import { Heart } from "lucide-react";
+import Artist from "~~/components/assets/artist.jpg";
 import Pagination from "~~/components/layout/Pagination";
+import { Button } from "~~/components/ui/button";
+import Sort from "~~/components/ui/sort";
 
 const products = [
   {
@@ -100,16 +105,17 @@ const products = [
   },
 ];
 
-const ITEMS_PER_PAGE = 6;
+const FEATURED_ITEMS = 3;
+const RECOMMENDED_ITEMS = 6;
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+  const indexOfLastItem = currentPage * RECOMMENDED_ITEMS;
+  const indexOfFirstItem = indexOfLastItem - RECOMMENDED_ITEMS;
   const currentProducts = products.slice(indexOfFirstItem, indexOfLastItem);
 
-  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(products.length / RECOMMENDED_ITEMS);
 
   const handlePageChange = (pageNumber: number) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
@@ -126,53 +132,89 @@ export default function Home() {
         </div>
         <div className="flex flex-col md:flex-row items-start">
           {/* sidebar on desktop */}
-          <div className="hidden md:block">
+          <div className="hidden md:block w-1/4">
             <Filter />
           </div>
-          {/* Featured */}
-          <div className="flex-1">
-            <h1 className="font-milonga text-5xl my-8">Featured</h1>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-10">
-              {currentProducts.map(product => (
-                <ProductCard
-                  key={product.artName}
-                  href={`/${product.artName}`}
-                  imgSrc={product.imgSrc}
-                  imgAlt={product.imgAlt}
-                  artist={product.artistName}
-                  title={product.artName}
-                  price={product.amount}
-                  tags={product.tags}
-                  isAI={true}
-                  isFavourite={false}
-                />
-              ))}
+          {/* Main content */}
+          <div className="flex-1 md:ml-6">
+            {/* Artist of the Day */}
+            <div className="w-full mb-10">
+              <h1 className="font-milonga text-5xl mt-8">Artist of the Day</h1>
+              <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-4 my-20">
+                <div className="flex-shrink-0">
+                  <Image
+                    alt="artist image"
+                    className="object-cover h-full w-full md:w-auto md:h-[400px] group-hover:opacity-50 transition-opacity"
+                    src={Artist}
+                    width={400}
+                    height={400}
+                  />
+                </div>
+                <div className="flex flex-col items-start space-y-2 md:space-y-4">
+                  <h1 className="text-5xl font-bold font-milonga ml-10">Artist Name</h1>
+                  <p className="text-base text-white ml-10 w-[630px]">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales porta semper. Vivamus dapibus
+                    lorem posuere dui semper, et malesuada dui lacinia.
+                  </p>
+                  <div className="ml-10 flex">
+                    <Heart className="fill-white mr-2.5" />
+                    <span>Follow This Artist</span>
+                  </div>
+                  {/* transparent div for vertical margin */}
+                  <div className="h-[168px]"></div>
+                  {/* button */}
+                  <div className="ml-10 w-[400px]">
+                    <Link href="/artistPage">
+                      <Button variant="default" size={"lg"} className="w-full text-2xl">
+                        Discover More From This Artist
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </div>
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            {/* Featured */}
+            <div className="w-full mb-10">
+              <h1 className="font-milonga text-5xl my-8">Featured</h1>
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-10">
+                {products.slice(0, FEATURED_ITEMS).map(product => (
+                  <ProductCard
+                    key={product.artName}
+                    href={`/${product.artName}`}
+                    imgSrc={product.imgSrc}
+                    imgAlt={product.imgAlt}
+                    artist={product.artistName}
+                    title={product.artName}
+                    price={product.amount}
+                    tags={product.tags}
+                    isAI={true}
+                    isFavourite={false}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
         {/* Recommended Section */}
-        <div>
-          <div className="flex-1 md:ml-52">
-            <h1 className="font-milonga text-5xl my-8">Recommended</h1>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-10">
-              {currentProducts.map(product => (
-                <ProductCard
-                  key={product.artName}
-                  href={`/${product.artName}`}
-                  imgSrc={product.imgSrc}
-                  imgAlt={product.imgAlt}
-                  artist={product.artistName}
-                  title={product.artName}
-                  price={product.amount}
-                  tags={product.tags}
-                  isAI={true}
-                  isFavourite={false}
-                />
-              ))}
-            </div>
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+        <div className="w-full">
+          <h1 className="font-milonga text-5xl my-8">Recommended</h1>
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-10">
+            {currentProducts.map(product => (
+              <ProductCard
+                key={product.artName}
+                href={`/${product.artName}`}
+                imgSrc={product.imgSrc}
+                imgAlt={product.imgAlt}
+                artist={product.artistName}
+                title={product.artName}
+                price={product.amount}
+                tags={product.tags}
+                isAI={true}
+                isFavourite={false}
+              />
+            ))}
           </div>
+          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
         </div>
       </div>
     </main>

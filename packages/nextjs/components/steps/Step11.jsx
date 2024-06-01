@@ -16,8 +16,8 @@ import Modal from "react-modal";
 const Step11 = ({ data, onDataChange }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [selectedOptions, setSelectedOptions] = useState(data?.selectedOptions || []);
-  const [description, setDescription] = useState(data?.description || "");
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
     onDataChange({ selectedOptions, description });
@@ -25,6 +25,9 @@ const Step11 = ({ data, onDataChange }) => {
 
   const openModal = index => {
     setSelectedIndex(index);
+    // Clear previous selections and descriptions when opening a new image
+    setSelectedOptions([]);
+    setDescription("");
     setModalIsOpen(true);
   };
 
@@ -46,6 +49,14 @@ const Step11 = ({ data, onDataChange }) => {
     setSelectedOptions(prevOptions =>
       prevOptions.includes(value) ? prevOptions.filter(option => option !== value) : [...prevOptions, value],
     );
+  };
+
+  const handleSave = () => {
+    // Save the selected options and description for the currently selected image
+    const updatedImages = data.selectedImages ? [...data.selectedImages] : [];
+    updatedImages.push({ index: selectedIndex, options: selectedOptions, description });
+    onDataChange({ ...data, selectedImages: updatedImages });
+    closeModal();
   };
 
   const artworks = [Artwork1, Artwork2, Artwork3, Artwork4, Artwork5, Artwork6, Artwork7, Artwork8, Artwork9];
@@ -125,7 +136,7 @@ const Step11 = ({ data, onDataChange }) => {
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                 />
-                <button onClick={closeModal} className="mt-4 px-4 py-2 bg-[#F8C522] text-black rounded-full">
+                <button onClick={handleSave} className="mt-4 px-4 py-2 bg-[#F8C522] text-black rounded-full">
                   Select Artwork
                 </button>
               </div>

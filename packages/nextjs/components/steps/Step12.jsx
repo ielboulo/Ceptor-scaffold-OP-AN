@@ -1,5 +1,15 @@
 import Image from "next/image";
 import Artwork1 from "../assets/artwork/artwork1.png";
+import Artwork2 from "../assets/artwork/artwork2.png";
+import Artwork3 from "../assets/artwork/artwork3.png";
+import Artwork4 from "../assets/artwork/artwork4.png";
+import Artwork5 from "../assets/artwork/artwork5.png";
+import Artwork6 from "../assets/artwork/artwork6.png";
+import Artwork7 from "../assets/artwork/artwork7.png";
+import Artwork8 from "../assets/artwork/artwork8.png";
+import Artwork9 from "../assets/artwork/artwork9.png";
+
+const artworks = [Artwork1, Artwork2, Artwork3, Artwork4, Artwork5, Artwork6, Artwork7, Artwork8, Artwork9];
 
 function Step12({ data }) {
   const {
@@ -13,7 +23,7 @@ function Step12({ data }) {
     characterScene,
     characterStory,
     notesForArtist,
-    referenceImages: { selectedOptions, description },
+    selectedImages = [], // Provide a default empty array
   } = data;
 
   return (
@@ -37,85 +47,70 @@ function Step12({ data }) {
               <p className="text-right text-[#F8C522] underline m-0">Edit Name</p>
             </div>
             <span className="text-lg text-[#949494]">Character Class:</span>
-            <div className="flex justify-between">
+            <div className="flex justify-between mb-4">
               <p className="text-left m-0">{characterClass.join(", ")}</p>
               <p className="text-right text-[#F8C522] underline m-0">Edit Class</p>
             </div>
-          </div>
-          <div className="mt-10">
             <span className="text-lg text-[#949494]">Character Species:</span>
             <div className="flex justify-between mb-4">
               <p className="text-left m-0">{characterSpecies}</p>
               <p className="text-right text-[#F8C522] underline m-0">Edit Species</p>
             </div>
             <span className="text-lg text-[#949494]">Character Background:</span>
-            <div className="flex justify-between">
+            <div className="flex justify-between mb-4">
               <p className="text-left m-0">{characterBackground}</p>
               <p className="text-right text-[#F8C522] underline m-0">Edit Background</p>
             </div>
           </div>
-        </div>
-        {/* end of grid display */}
-        {/* character appearance */}
-        <div>
-          <div className="mt-5">
-            <div className="flex justify-between items-center">
-              <p className="text-lg text-[#949494] text-left">Character Appearance:</p>
-              <p className="text-right text-[#F8C522] underline">Edit Appearance</p>
+          <div className="mt-4">
+            <span className="text-lg text-[#949494]">Character Appearance:</span>
+            <div className="flex justify-between mb-4">
+              <p className="text-left m-0">{characterAppearance}</p>
+              <p className="text-right text-[#F8C522] underline m-0">Edit Appearance</p>
             </div>
-            <p className="m-0">{characterAppearance}</p>
-          </div>
-          <div className="mt-5">
-            <div className="flex justify-between items-center">
-              <p className="text-lg text-[#949494] text-left">Character Weapons, Clothing, Armor, and Items:</p>
-              <p className="text-right text-[#F8C522] underline">Edit Items</p>
+            <span className="text-lg text-[#949494]">Character Items:</span>
+            <div className="flex justify-between mb-4">
+              <p className="text-left m-0">{characterItems}</p>
+              <p className="text-right text-[#F8C522] underline m-0">Edit Items</p>
             </div>
-            <p className="m-0">{characterItems}</p>
-          </div>
-          <div className="mt-5">
-            <div className="flex justify-between items-center">
-              <p className="text-lg text-[#949494] text-left">Environment, Scenery, or Background:</p>
-              <p className="text-right text-[#F8C522] underline">Edit Scenery</p>
+            <span className="text-lg text-[#949494]">Character Scene:</span>
+            <div className="flex justify-between mb-4">
+              <p className="text-left m-0">{characterScene}</p>
+              <p className="text-right text-[#F8C522] underline m-0">Edit Scene</p>
             </div>
-            <p className="m-0">{characterScene}</p>
-          </div>
-          <div className="mt-5">
-            <div className="flex justify-between items-center">
-              <p className="text-lg text-[#949494] text-left">Character Story:</p>
-              <p className="text-right text-[#F8C522] underline">Edit Story</p>
+            <span className="text-lg text-[#949494]">Character Story:</span>
+            <div className="flex justify-between mb-4">
+              <p className="text-left m-0">{characterStory}</p>
+              <p className="text-right text-[#F8C522] underline m-0">Edit Story</p>
             </div>
-            <p className="m-0">{characterStory}</p>
-          </div>
-          <div className="mt-5">
-            <div className="flex justify-between items-center">
-              <p className="text-lg text-[#949494] text-left">Notes For the Artist:</p>
-              <p className="text-right text-[#F8C522] underline">Edit Notes</p>
-            </div>
-            <p className="m-0">{notesForArtist}</p>
           </div>
         </div>
-        {/* end character appearance */}
-
-        {/* Reference Images */}
+        <div className="text-left mt-4">
+          <span className="text-lg text-[#949494]">Notes for Artist:</span>
+          <div className="flex justify-between mb-4">
+            <p className="text-left m-0">{notesForArtist}</p>
+            <p className="text-right text-[#F8C522] underline m-0">Edit Notes</p>
+          </div>
+        </div>
         <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-2 gap-4">
-            {/* first column */}
-            <div>
-              <Image src={Artwork1} alt="Artwork 1" width={400} height={245} className="w-full h-auto" />
-            </div>
-
-            {/* second column */}
-            <div>
-              <div className="flex justify-between items-center">
-                <p className="text-lg text-[#949494] text-left">Likes:</p>
-                <p className="text-right text-[#F8C522] underline">Edit Reference</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {selectedImages.map((image, index) => (
+              <div key={index} className="w-full h-auto">
+                <Image
+                  src={artworks[image.index]}
+                  alt={`Selected Artwork ${index + 1}`}
+                  width={400}
+                  height={245}
+                  className="w-full h-auto"
+                />
+                <div className="mt-2">
+                  <h3 className="text-lg font-semibold">Likes:</h3>
+                  <p className="m-0">{image.options.join("/ ")}</p>
+                  <h3 className="text-lg font-semibold mt-2">Notes:</h3>
+                  <p className="m-0">{image.description}</p>
+                </div>
               </div>
-              <p className="m-0">{selectedOptions.join(", ")}</p>
-              <div>
-                <p className="text-lg text-[#949494]">Notes:</p>
-                <p className="m-0">{description}</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
