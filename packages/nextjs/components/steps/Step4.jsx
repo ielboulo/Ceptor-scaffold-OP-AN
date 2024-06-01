@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const SelectOption = ({ options, selectedOptions, handleOptionChange }) => (
   <div className="flex flex-wrap justify-center space-x-4 mt-4">
@@ -25,8 +25,13 @@ const SelectOption = ({ options, selectedOptions, handleOptionChange }) => (
   </div>
 );
 
-const Step4 = () => {
-  const [selectedOptions, setSelectedOptions] = useState([]);
+const Step4 = ({ data, onDataChange }) => {
+  const [selectedOptions, setSelectedOptions] = useState(data || []);
+
+  useEffect(() => {
+    onDataChange({ chracterClass: selectedOptions });
+  }, [onDataChange, selectedOptions]);
+
   const options = [
     "Artificer",
     "Barbarian",

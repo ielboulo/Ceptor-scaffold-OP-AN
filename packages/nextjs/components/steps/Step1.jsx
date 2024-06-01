@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const SelectOption = ({ options, selectedOption, handleOptionChange }) => (
   <div className="flex justify-center space-x-2 mt-4">
@@ -24,8 +24,13 @@ const SelectOption = ({ options, selectedOption, handleOptionChange }) => (
   </div>
 );
 
-const Step1 = () => {
-  const [selectedOption, setSelectedOption] = useState("");
+const Step1 = ({ data, onDataChange }) => {
+  const [selectedOption, setSelectedOption] = useState(data || "");
+
+  useEffect(() => {
+    onDataChange({ imageType: selectedOption });
+  }, [onDataChange, selectedOption]);
+
   const options = [
     "Profile Pic, Avatar, or Bust",
     "Full Body - Simple Pose",

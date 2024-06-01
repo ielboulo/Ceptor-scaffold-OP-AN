@@ -1,7 +1,21 @@
 import Image from "next/image";
 import Artwork1 from "../assets/artwork/artwork1.png";
 
-function Step12() {
+function Step12({ data }) {
+  const {
+    imageType,
+    characterName,
+    characterSpecies,
+    characterClass,
+    characterBackground,
+    characterAppearance,
+    characterItems,
+    characterScene,
+    characterStory,
+    notesForArtist,
+    referenceImages: { selectedOptions, description },
+  } = data;
+
   return (
     <>
       <div>
@@ -13,30 +27,30 @@ function Step12() {
         {/* grid display */}
         <div className="text-left">
           <span className="text-lg text-[#949494]">Image Type:</span>
-          <p className="m-0">Full Body - Simle Pose</p>
+          <p className="m-0">{imageType}</p>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="mt-4">
             <span className="text-lg text-[#949494]">Character Name:</span>
             <div className="flex justify-between mb-4">
-              <p className="text-left m-0">Morbi Laoreet</p>
+              <p className="text-left m-0">{characterName}</p>
               <p className="text-right text-[#F8C522] underline m-0">Edit Name</p>
             </div>
             <span className="text-lg text-[#949494]">Character Class:</span>
             <div className="flex justify-between">
-              <p className="text-left m-0">Artificer/Wizard</p>
+              <p className="text-left m-0">{characterClass.join(", ")}</p>
               <p className="text-right text-[#F8C522] underline m-0">Edit Class</p>
             </div>
           </div>
           <div className="mt-10">
             <span className="text-lg text-[#949494]">Character Species:</span>
             <div className="flex justify-between mb-4">
-              <p className="text-left m-0">Dragonborn</p>
+              <p className="text-left m-0">{characterSpecies}</p>
               <p className="text-right text-[#F8C522] underline m-0">Edit Species</p>
             </div>
             <span className="text-lg text-[#949494]">Character Background:</span>
             <div className="flex justify-between">
-              <p className="text-left m-0">Guild Artisan</p>
+              <p className="text-left m-0">{characterBackground}</p>
               <p className="text-right text-[#F8C522] underline m-0">Edit Background</p>
             </div>
           </div>
@@ -49,56 +63,41 @@ function Step12() {
               <p className="text-lg text-[#949494] text-left">Character Appearance:</p>
               <p className="text-right text-[#F8C522] underline">Edit Appearance</p>
             </div>
-            <p className="m-0">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua.
-            </p>
+            <p className="m-0">{characterAppearance}</p>
           </div>
           <div className="mt-5">
             <div className="flex justify-between items-center">
               <p className="text-lg text-[#949494] text-left">Character Weapons, Clothing, Armor, and Items:</p>
               <p className="text-right text-[#F8C522] underline">Edit Items</p>
             </div>
-            <p className="m-0">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua.
-            </p>
+            <p className="m-0">{characterItems}</p>
           </div>
           <div className="mt-5">
             <div className="flex justify-between items-center">
               <p className="text-lg text-[#949494] text-left">Environment, Scenery, or Background:</p>
               <p className="text-right text-[#F8C522] underline">Edit Scenery</p>
             </div>
-            <p className="m-0">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua.
-            </p>
+            <p className="m-0">{characterScene}</p>
           </div>
           <div className="mt-5">
             <div className="flex justify-between items-center">
               <p className="text-lg text-[#949494] text-left">Character Story:</p>
               <p className="text-right text-[#F8C522] underline">Edit Story</p>
             </div>
-            <p className="m-0">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua.
-            </p>
+            <p className="m-0">{characterStory}</p>
           </div>
           <div className="mt-5">
             <div className="flex justify-between items-center">
               <p className="text-lg text-[#949494] text-left">Notes For the Artist:</p>
               <p className="text-right text-[#F8C522] underline">Edit Notes</p>
             </div>
-            <p className="m-0">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua.
-            </p>
+            <p className="m-0">{notesForArtist}</p>
           </div>
         </div>
         {/* end character appearance */}
 
         {/* Reference Images */}
-        <div class="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-2 gap-4">
             {/* first column */}
             <div>
@@ -111,13 +110,10 @@ function Step12() {
                 <p className="text-lg text-[#949494] text-left">Likes:</p>
                 <p className="text-right text-[#F8C522] underline">Edit Reference</p>
               </div>
-              <p className="m-0">Art Style/Armor</p>
+              <p className="m-0">{selectedOptions.join(", ")}</p>
               <div>
                 <p className="text-lg text-[#949494]">Notes:</p>
-                <p className="m-0">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                  dolore magna aliqua.
-                </p>
+                <p className="m-0">{description}</p>
               </div>
             </div>
           </div>
