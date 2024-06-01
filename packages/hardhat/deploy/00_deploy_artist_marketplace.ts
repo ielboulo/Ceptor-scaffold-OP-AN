@@ -1,6 +1,7 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { Contract } from "ethers";
+import { ethers } from "hardhat";
 
 /**
  * Deploys a contract named "YourContract" using the deployer account and
@@ -36,6 +37,42 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const artistMarketPlace = await hre.ethers.getContract<Contract>("ArtistMarketPlace", deployer);
   // console.log("👋 Initial greeting:", await yourContract.greeting());
   console.log("👋👋👋ArtistMarketPlace deployed, its address = ", artistMarketPlace.target);
+  //create two artworks
+  const artOne = {
+    url: "7Wb3wQJNtUu4PD_r1SxRID2R7oG-0KMH7ayGkGdF3Qc",
+    artType: BigInt(1), // Hand Drawn
+    cost: ethers.parseEther("2"),
+    likes: BigInt(0),
+    creator: "0x7542e7009260C0e13bE5C025a09043b9e3fF0886",
+    owner: "0x7542e7009260C0e13bE5C025a09043b9e3fF0886",
+  };
+
+  const artTwo = {
+    url: "7Wb3wQJNtUu4PD_r1SxRID2R7oG-0KMH7ayGkGdF3Qc",
+    artType: BigInt(0), // AIGenerated
+    cost: ethers.parseEther("1"),
+    likes: BigInt(0),
+    creator: "0x7542e7009260C0e13bE5C025a09043b9e3fF0886",
+    owner: "0x7542e7009260C0e13bE5C025a09043b9e3fF0886",
+  };
+
+  const ArtistOne = {
+    wallet: "0x7542e7009260C0e13bE5C025a09043b9e3fF0886",
+    name: "Julian Maschevelle",
+    style: 0,
+    email: "jamiebones2000@yahoo.uk",
+    numberoFArts: BigInt(0),
+    numberFeaturedTimes: BigInt(0),
+    artworks: [],
+    commisions: [] as bigint[],
+  };
+  console.log("creating new artist data");
+  await artistMarketPlace.createArtistUser(ArtistOne);
+  console.log("finished creating artist data");
+  console.log("creating artwork");
+  await artistMarketPlace.saveArtWorkDetails(artOne);
+  await artistMarketPlace.saveArtWorkDetails(artTwo);
+  console.log("finished creating artwork");
 };
 
 export default deployYourContract;

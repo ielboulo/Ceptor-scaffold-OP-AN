@@ -79,6 +79,7 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 
 	struct Artist {
 		address wallet;
+		string email;
 		string name;
 		ArtType style;
 		uint256 numberoFArts;
@@ -89,6 +90,7 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 
 	struct Client {
 		address wallet;
+		string email;
 		uint256[] favoriteArts;
 		uint256[] commisions;
 	}
@@ -229,7 +231,14 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 		emit RequestFulfilled(_requestId, _randomWords);
 	}
 
-	function displayArtistOfTheDay() public view returns (Artist memory) {
+	function displayArtistOfTheDay()
+		public
+		view
+		returns (Artist memory artist)
+	{
+		if (s_artist.length == 0) {
+			return artist;
+		}
 		return s_artist[featuredArtistIndex];
 	}
 
@@ -245,7 +254,7 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 		}
 	}
 
-	function buyArtWork(uint256 artWorkIndex) public payable {
+	function buyArtWork(uint256 artWorkIndex ) public payable {
 		if (artWorkIndex > s_artworks.length || s_artworks.length == 0) {
 			revert ErrorArtworkNotInTheSuppliedIndex();
 		}
@@ -265,6 +274,7 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 			//create a new Client
 			Client memory _client = Client({
 				wallet: msg.sender,
+				email: "",
 				favoriteArts: empty,
 				commisions: empty
 			});
@@ -279,8 +289,9 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 		ArtWork memory artwork
 	) public checkArtWorkDetails(artwork) {
 		//save the artwork in the artwork storage
-		uint256 index = s_artworks.length;
 		s_artworks.push(artwork);
+		uint256 index = s_artworks.length;
+		
 		//update the artist works array with the artwork index
 
 		uint256 artistIndexInArray = s_users[artwork.creator].artistID;
@@ -289,7 +300,7 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 			revert ErrorArtistNotFound(artwork.creator);
 		}
 		//we good save the index in the artist work array
-		uint256 artworkIndex = index == 0 ? index : index + 1;
+		uint256 artworkIndex = index - 1;
 		artist.artworks.push(artworkIndex);
 		artist.numberoFArts++;
 	}
@@ -297,6 +308,9 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 	function getArtist(
 		uint256 index
 	) public view returns (Artist memory artist) {
+		if (s_artist.length == 0) {
+			return artist;
+		}
 		return s_artist[index];
 	}
 
@@ -424,8 +438,8 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 				//transfer the commision to the artist
 				//add the art to the artist collection and the client as the owner
 				//save the taskProgress update sent
-				 _saveArtworkCommisionFinalized(artCommisionID, progressID);
-			} else if ( taskProgress.taskStatus == TaskStatus.OnGoing ){
+				_saveArtworkCommisionFinalized(artCommisionID, progressID);
+			} else if (taskProgress.taskStatus == TaskStatus.OnGoing) {
 				taskProgress.clientApproval = _clientApproval;
 			}
 			//if progress == finish and client response == approved
@@ -462,6 +476,48 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 		s_artistCommision[artCommision.artist] += artCommision.budget;
 		//finally save the taskProgress
 		taskProgress.clientApproval = ClientApproval.Approved;
+	}
+
+	function getArtistCommisions(
+		uint256 index
+	) public view returns (ArtCommision[] memory commissionsArt) {
+		if (s_artist.length == 0) {
+			return commissionsArt;
+		}
+		Artist memory artist = s_artist[index];
+		ArtCommision[] memory commissions = new ArtCommision[](
+			artist.commisions.length
+		);
+		if (artist.wallet != address(0)) {
+			uint i = 0;
+			for (i; i < artist.commisions.length; i++) {
+				commissions[i] = s_artCommision[artist.commisions[i]];
+			}
+		}
+		return commissions;
+	}
+
+	function getArtistArtWorks(
+		address wallet
+	) public view returns (ArtWork[] memory arts) {
+		User memory user = s_users[wallet];
+		if (  s_artist.length == 0 && s_artworks.length ==  0 ){return arts;}
+		
+			Artist memory artist = s_artist[user.artistID];
+			//loop through the artworks
+			ArtWork[] memory artWork = new ArtWork[](artist.artworks.length);
+			console.log("length of artist art ", artist.artworks.length);
+			uint i = 0;
+			for (i; i < artist.artworks.length; i++){
+				console.log("value iof ", i);
+				ArtWork memory art = s_artworks[artist.artworks[i]];
+				artWork[i] = art;
+
+			}
+		
+
+		return artWork;
+		
 	}
 
 	receive() external payable {}

@@ -8,6 +8,7 @@ const CreateArtistUser = () => {
   const [formData, setFormData] = useState({
     artistName: "",
     style: "", //0 or 1
+    email: "",
   });
 
   const { address } = useAccount();
@@ -71,6 +72,20 @@ const CreateArtistUser = () => {
           id="artistName"
           name="artistName"
           value={formData.artistName}
+          onChange={handleChange}
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="artistEmail">
+          Email
+        </label>
+        <input
+          type="text"
+          id="artistEmail"
+          name="email"
+          value={formData.email}
           onChange={handleChange}
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         />
