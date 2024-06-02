@@ -36,6 +36,9 @@
   },
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
+    "@nomicfoundation/hardhat-ignition-ethers": "^0.15.4",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.10",
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@types/node": "^20.12.12",
     "dotenv": "^16.4.5",
     "hardhat": "^2.22.4",

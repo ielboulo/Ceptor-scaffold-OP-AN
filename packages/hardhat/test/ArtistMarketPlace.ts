@@ -15,6 +15,7 @@ describe("ArtistMarketPlace", function () {
     const ArtistOne = {
       wallet: await addr1.getAddress(),
       name: "Julian Maschevelle",
+      email: "yyryryryrrrrrrrrrr",
       style: 0,
       numberoFArts: BigInt(0),
       numberFeaturedTimes: BigInt(0),
@@ -30,12 +31,14 @@ describe("ArtistMarketPlace", function () {
       numberFeaturedTimes: BigInt(0),
       artworks: [] as bigint[],
       commisions: [] as bigint[],
+      email: "yyryryryrrrrrrrrrr",
     } as unknown as ArtistMarketPlace.ArtistStruct;
 
     const ClientOne = {
       wallet: await client2.getAddress(),
       favoriteArts: [] as bigint[],
       commisions: [] as bigint[],
+      email: "yyryryryrrrrrrrrrr",
     } as unknown as ArtistMarketPlace.ClientStruct;
 
     await artistMarketPlace.createArtistUser(ArtistOne);
@@ -64,9 +67,12 @@ describe("ArtistMarketPlace", function () {
         likes: BigInt(0),
         creator: await addr1.getAddress(),
         owner: await addr1.getAddress(),
+        email: "yyryryryrrrrrrrrrr",
       };
 
       await artistMarketPlace.saveArtWorkDetails(artwork);
+      const d = await artistMarketPlace.getArtistArtWorks(addr1.getAddress());
+      console.log("ddhdhhhhhhhhh ", d);
       const savedArtwork = await artistMarketPlace.s_artworks(0);
       const artistUser = await artistMarketPlace.s_users(await addr1.getAddress());
       const artist = await artistMarketPlace.getArtist(artistUser.artistID);
