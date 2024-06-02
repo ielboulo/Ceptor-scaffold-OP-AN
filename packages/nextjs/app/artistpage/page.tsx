@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Artist from "../../components/assets/artist.jpg";
+import Link from "next/link";
 import Pagination from "../../components/layout/Pagination";
 import ProductCard from "../../components/ui/product-card";
 import { Heart } from "lucide-react";
+import Artist from "~~/components/assets/artist.jpeg";
 import { Button } from "~~/components/ui/button";
 
 const products = [
@@ -127,9 +128,11 @@ export default function Home() {
             <div className="h-[168px]"></div>
             {/* button */}
             <div className="ml-10 w-[400px]">
-              <Button variant="default" size={"lg"} className="w-full text-2xl">
-                Commission This Artist
-              </Button>
+              <Link href="/commission">
+                <Button variant="outline" size={"lg"} className="w-full text-2xl mt-5">
+                  Commission This Artist
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

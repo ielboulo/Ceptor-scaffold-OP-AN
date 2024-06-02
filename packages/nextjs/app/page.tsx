@@ -7,7 +7,7 @@ import Filter from "../components/ui/filter";
 import ProductCard from "../components/ui/product-card";
 import Search from "../components/ui/search";
 import { Heart } from "lucide-react";
-import Artist from "~~/components/assets/artist.jpg";
+import Artist from "~~/components/assets/artist.jpeg";
 import Pagination from "~~/components/layout/Pagination";
 import { Button } from "~~/components/ui/button";
 import Sort from "~~/components/ui/sort";

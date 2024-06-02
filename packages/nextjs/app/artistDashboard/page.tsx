@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Modal from "./modals/CommissionModal";
 import { CircleCheck, CircleX, Upload } from "lucide-react";
-import SampleArtwork from "~~/components/assets/artist.jpg";
+import SampleArtwork from "~~/components/assets/artist.jpeg";
 import SuccessImage from "~~/components/assets/successImage.png";
 import { Button } from "~~/components/ui/button";
 

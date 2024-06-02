@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Artist from "~~/components/assets/artist.jpg";
+import Artist from "~~/components/assets/artist.jpeg";
 import Pagination from "~~/components/layout/Pagination";
 import ArtPageProductCard from "~~/components/ui/ArtpageProductCard";
 import { Button } from "~~/components/ui/button";

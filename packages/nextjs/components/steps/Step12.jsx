@@ -1,13 +1,13 @@
 import Image from "next/image";
-import Artwork1 from "../assets/artwork/artwork1.png";
-import Artwork2 from "../assets/artwork/artwork2.png";
-import Artwork3 from "../assets/artwork/artwork3.png";
-import Artwork4 from "../assets/artwork/artwork4.png";
-import Artwork5 from "../assets/artwork/artwork5.png";
-import Artwork6 from "../assets/artwork/artwork6.png";
-import Artwork7 from "../assets/artwork/artwork7.png";
-import Artwork8 from "../assets/artwork/artwork8.png";
-import Artwork9 from "../assets/artwork/artwork9.png";
+import Artwork1 from "~~/components/assets/artwork/artwork1.jpg";
+import Artwork2 from "~~/components/assets/artwork/artwork2.jpg";
+import Artwork3 from "~~/components/assets/artwork/artwork3.jpg";
+import Artwork4 from "~~/components/assets/artwork/artwork4.jpg";
+import Artwork5 from "~~/components/assets/artwork/artwork5.jpg";
+import Artwork6 from "~~/components/assets/artwork/artwork6.jpg";
+import Artwork7 from "~~/components/assets/artwork/artwork7.jpg";
+import Artwork8 from "~~/components/assets/artwork/artwork8.jpg";
+import Artwork9 from "~~/components/assets/artwork/artwork9.jpg";
 
 const artworks = [Artwork1, Artwork2, Artwork3, Artwork4, Artwork5, Artwork6, Artwork7, Artwork8, Artwork9];
 
