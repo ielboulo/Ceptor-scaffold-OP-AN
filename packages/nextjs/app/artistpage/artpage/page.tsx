@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import Artist from "~~/components/assets/artist.jpg";
 import Pagination from "~~/components/layout/Pagination";
 import ArtPageProductCard from "~~/components/ui/ArtpageProductCard";
@@ -157,9 +158,11 @@ export default function Home() {
               <Button variant="default" size={"lg"} className="w-full text-2xl">
                 Buy This Artwork
               </Button>
-              <Button variant="outline" size={"lg"} className="w-full text-2xl mt-5">
-                Commission This Artist
-              </Button>
+              <Link href="/commission">
+                <Button variant="outline" size={"lg"} className="w-full text-2xl mt-5">
+                  Commission This Artist
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
