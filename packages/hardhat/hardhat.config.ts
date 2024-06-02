@@ -139,6 +139,16 @@ const config: HardhatUserConfig = {
       url: "https://sepolia.mode.network",
       accounts: [deployerPrivateKey],
     },
+    fujij: {
+      url: "https://sepolia.mode.network",
+      accounts: [deployerPrivateKey],
+    },
+    // fuji: {
+    //   url: process.env.QUICKNODE_URL, // IEL TODO
+    //   // url : "https://sleek-wiser-model.avalanche-testnet.quiknode.pro/405ba711e9e0d7bb0c56bef1e3e34333b4844e72/ext/bc/C/rpc/",
+    //   accounts: [deployerPrivateKey],
+    //   chainId: 43113,
+    // },
   },
   // configuration for harhdat-verify plugin
   etherscan: {
