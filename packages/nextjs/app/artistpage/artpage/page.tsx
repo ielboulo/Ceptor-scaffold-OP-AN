@@ -4,136 +4,18 @@ import { useState } from "react";
 import Image from "next/image";
 import Artist from "~~/components/assets/artist.jpg";
 import Pagination from "~~/components/layout/Pagination";
-import ArtPageProductCard from "~~/components/ui/ArtpageProductCard";
 import { Button } from "~~/components/ui/button";
-import ProductCard1 from "~~/components/ui/product-card";
 
-const products = [
-  {
-    artistName: "Takashi Murakami",
-    artName: "Flowers Blooming",
-    amount: "1 Token",
-    tags: ["Open for Commissions", "AI Generated", "Fantasy", "Wizard", "Dungeons & Dragons"],
-    imgSrc: "/ceptor.png",
-    imgAlt: "A vibrant floral artwork by Takashi Murakami",
-    description:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem cumque autem mollitia qui, commodi libero.",
-  },
-  {
-    artistName: "Beeple",
-    artName: "Everydays: The First 5000 Days",
-    amount: "1 Token",
-    tags: ["Open for Commissions", "AI Generated", "Fantasy", "Wizard", "Dungeons & Dragons"],
-    imgSrc: "/ceptor.png",
-    imgAlt: "A digital collage artwork by Beeple",
-    description:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem cumque autem mollitia qui, commodi libero.",
-  },
-  {
-    artistName: "Banksy",
-    artName: "Girl with Balloon",
-    amount: "1 Token",
-    tags: ["Open for Commissions", "AI Generated", "Fantasy", "Wizard", "Dungeons & Dragons"],
-    imgSrc: "/ceptor.png",
-    imgAlt: "A street art piece of a girl releasing a heart-shaped balloon by Banksy",
-    description:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem cumque autem mollitia qui, commodi libero.",
-  },
-  {
-    artistName: "Yayoi Kusama",
-    artName: "Infinity Nets",
-    amount: "1 Token",
-    tags: ["Open for Commissions", "AI Generated", "Fantasy", "Wizard", "Dungeons & Dragons"],
-    imgSrc: "/ceptor.png",
-    imgAlt: "An abstract artwork with polka dots by Yayoi Kusama",
-    description:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem cumque autem mollitia qui, commodi libero.",
-  },
-  {
-    artistName: "Andy Warhol",
-    artName: "Marilyn Diptych",
-    amount: "1 Token",
-    tags: ["Open for Commissions", "AI Generated", "Fantasy", "Wizard", "Dungeons & Dragons"],
-    imgSrc: "/ceptor.png",
-    imgAlt: "A pop art portrait of Marilyn Monroe by Andy Warhol",
-    description:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem cumque autem mollitia qui, commodi libero.",
-  },
-  {
-    artistName: "Andy Warhol",
-    artName: "Marilyn Diptych",
-    amount: "1 Token",
-    tags: ["Open for Commissions", "AI Generated", "Fantasy", "Wizard", "Dungeons & Dragons"],
-    imgSrc: "/ceptor.png",
-    imgAlt: "A pop art portrait of Marilyn Monroe by Andy Warhol",
-    description:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem cumque autem mollitia qui, commodi libero.",
-  },
-  {
-    artistName: "Yayoi Kusama",
-    artName: "Infinity Nets",
-    amount: "1 Token",
-    tags: ["Open for Commissions", "AI Generated", "Fantasy", "Wizard", "Dungeons & Dragons"],
-    imgSrc: "/ceptor.png",
-    imgAlt: "An abstract artwork with polka dots by Yayoi Kusama",
-    description:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem cumque autem mollitia qui, commodi libero.",
-  },
-  {
-    artistName: "Andy Warhol",
-    artName: "Marilyn Diptych",
-    amount: "1 Token",
-    tags: ["Open for Commissions", "AI Generated", "Fantasy", "Wizard", "Dungeons & Dragons"],
-    imgSrc: "/ceptor.png",
-    imgAlt: "A pop art portrait of Marilyn Monroe by Andy Warhol",
-    description:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem cumque autem mollitia qui, commodi libero.",
-  },
-  {
-    artistName: "Andy Warhol",
-    artName: "Marilyn Diptych",
-    amount: "1 Token",
-    tags: ["Open for Commissions", "AI Generated", "Fantasy", "Wizard", "Dungeons & Dragons"],
-    imgSrc: "/ceptor.png",
-    imgAlt: "A pop art portrait of Marilyn Monroe by Andy Warhol",
-    description:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem cumque autem mollitia qui, commodi libero.",
-  },
-];
+//import ProductCard1 from "~~/components/ui/product-card";
 
 const ITEMS_PER_PAGE = 6;
 
 export default function Home() {
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-  const currentProducts = products.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
-
-  const handlePageChange = (pageNumber: number) => {
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
-      setCurrentPage(pageNumber);
-    }
-  };
-
   return (
     <main>
       <div className="mx-5 md:mx-32">
         <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-4 my-20">
-          <div className="flex-shrink-0">
-            <ArtPageProductCard
-              key={products[0].artName}
-              href={`/${products[0].artName}`}
-              imgSrc={products[0].imgSrc}
-              imgAlt={products[0].imgAlt}
-              tags={products[0].tags}
-              isAI={true}
-              isFavourite={false}
-              description={products[0].description}
-            />
-          </div>
+          <div className="flex-shrink-0"></div>
           <div className="flex flex-col items-start space-y-2 md:space-y-4 mx-5">
             <div className="relative flex">
               <Image src={Artist} alt="artist profile picture" className="w-[86px] h-[83px]" />
@@ -149,7 +31,7 @@ export default function Home() {
             {/* cost of art */}
             <div>
               <span className="text-xs ml-10">Cost</span>
-              <p className="ml-10 m-0">{products[0].amount}</p>
+              {/* <p className="ml-10 m-0">{products[0].amount}</p> */}
             </div>
 
             {/* button */}
@@ -167,23 +49,7 @@ export default function Home() {
           {/* more items */}
           <div className="flex-1">
             <h1 className="font-milonga text-4xl my-8">More by Artist Name</h1>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-10">
-              {currentProducts.map(product => (
-                <ProductCard1
-                  key={product.artName}
-                  href={`/${product.artName}`}
-                  imgSrc={product.imgSrc}
-                  imgAlt={product.imgAlt}
-                  artist={product.artistName}
-                  title={product.artName}
-                  price={product.amount}
-                  tags={product.tags}
-                  isAI={true}
-                  isFavourite={false}
-                />
-              ))}
-            </div>
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-10"></div>
           </div>
         </div>
       </div>
