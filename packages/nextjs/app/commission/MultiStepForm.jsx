@@ -14,7 +14,7 @@ import Step10 from "~~/components/steps/Step10";
 import Step11 from "~~/components/steps/Step11";
 import Step12 from "~~/components/steps/Step12";
 
-const MultiStepForm = ({ isOpen, onClose }) => {
+const MultiStepForm = ({ isOpen, onClose, onSuccess }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     imageType: "",
@@ -29,6 +29,7 @@ const MultiStepForm = ({ isOpen, onClose }) => {
     notesForArtist: "",
     referenceImages: { selectedOptions: [], description: "" },
   });
+
   const totalSteps = 12;
   const titles = [
     "Image Type",
@@ -66,6 +67,7 @@ const MultiStepForm = ({ isOpen, onClose }) => {
     };
     sendMetadataToIrys(metadata);
     onClose();
+    onSuccess(); // Trigger the onSuccess callback
   };
 
   const sendMetadataToIrys = metadata => {
