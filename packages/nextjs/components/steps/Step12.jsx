@@ -40,6 +40,7 @@ function Step12({ data }) {
           <p className="m-0">{imageType}</p>
         </div>
         <div className="grid grid-cols-2 gap-4">
+          {/* First Column */}
           <div className="mt-4">
             <span className="text-lg text-[#949494]">Character Name:</span>
             <div className="flex justify-between mb-4">
@@ -48,9 +49,13 @@ function Step12({ data }) {
             </div>
             <span className="text-lg text-[#949494]">Character Class:</span>
             <div className="flex justify-between mb-4">
-              <p className="text-left m-0">{characterClass.join(", ")}</p>
+              <p className="text-left m-0">{characterClass.join("/ ")}</p>
               <p className="text-right text-[#F8C522] underline m-0">Edit Class</p>
             </div>
+          </div>
+
+          {/* Second Column */}
+          <div className="mt-10">
             <span className="text-lg text-[#949494]">Character Species:</span>
             <div className="flex justify-between mb-4">
               <p className="text-left m-0">{characterSpecies}</p>
@@ -62,27 +67,28 @@ function Step12({ data }) {
               <p className="text-right text-[#F8C522] underline m-0">Edit Background</p>
             </div>
           </div>
-          <div className="mt-4">
-            <span className="text-lg text-[#949494]">Character Appearance:</span>
-            <div className="flex justify-between mb-4">
-              <p className="text-left m-0">{characterAppearance}</p>
-              <p className="text-right text-[#F8C522] underline m-0">Edit Appearance</p>
-            </div>
-            <span className="text-lg text-[#949494]">Character Items:</span>
-            <div className="flex justify-between mb-4">
-              <p className="text-left m-0">{characterItems}</p>
-              <p className="text-right text-[#F8C522] underline m-0">Edit Items</p>
-            </div>
-            <span className="text-lg text-[#949494]">Character Scene:</span>
-            <div className="flex justify-between mb-4">
-              <p className="text-left m-0">{characterScene}</p>
-              <p className="text-right text-[#F8C522] underline m-0">Edit Scene</p>
-            </div>
-            <span className="text-lg text-[#949494]">Character Story:</span>
-            <div className="flex justify-between mb-4">
-              <p className="text-left m-0">{characterStory}</p>
-              <p className="text-right text-[#F8C522] underline m-0">Edit Story</p>
-            </div>
+        </div>
+
+        <div className="mt-4">
+          <span className="text-lg text-[#949494]">Character Appearance:</span>
+          <div className="flex justify-between mb-4">
+            <p className="text-left m-0">{characterAppearance}</p>
+            <p className="text-right text-[#F8C522] underline m-0">Edit Appearance</p>
+          </div>
+          <span className="text-lg text-[#949494]">Character Items:</span>
+          <div className="flex justify-between mb-4">
+            <p className="text-left m-0">{characterItems}</p>
+            <p className="text-right text-[#F8C522] underline m-0">Edit Items</p>
+          </div>
+          <span className="text-lg text-[#949494]">Character Scene:</span>
+          <div className="flex justify-between mb-4">
+            <p className="text-left m-0">{characterScene}</p>
+            <p className="text-right text-[#F8C522] underline m-0">Edit Scene</p>
+          </div>
+          <span className="text-lg text-[#949494]">Character Story:</span>
+          <div className="flex justify-between mb-4">
+            <p className="text-left m-0">{characterStory}</p>
+            <p className="text-right text-[#F8C522] underline m-0">Edit Story</p>
           </div>
         </div>
         <div className="text-left mt-4">
@@ -93,20 +99,31 @@ function Step12({ data }) {
           </div>
         </div>
         <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {selectedImages.map((image, index) => (
-              <div key={index} className="w-full h-auto">
-                <Image
-                  src={artworks[image.index]}
-                  alt={`Selected Artwork ${index + 1}`}
-                  width={400}
-                  height={245}
-                  className="w-full h-auto"
-                />
-                <div className="mt-2">
-                  <h3 className="text-lg font-semibold">Likes:</h3>
-                  <p className="m-0">{image.options.join("/ ")}</p>
-                  <h3 className="text-lg font-semibold mt-2">Notes:</h3>
+              <div key={index} className="w-full h-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Image Column */}
+                <div>
+                  <Image
+                    src={artworks[image.index]}
+                    alt={`Selected Artwork ${index + 1}`}
+                    width={400}
+                    height={245}
+                    className="w-full h-auto"
+                  />
+                </div>
+
+                {/* Text Column */}
+                <div>
+                  <div className="mb-4">
+                    <div className="flex justify-between">
+                      <p className="text-lg text-[#949494] text-left m-0">Likes:</p>
+                      <p className="text-right text-[#F8C522] underline m-0">Edit Reference</p>
+                    </div>
+                    {/* this will show the selected likes by the user */}
+                    <p className="m-0">{image.options.join("/ ")}</p>
+                  </div>
+                  <h3 className="text-lg text-[#949494]">Notes:</h3>
                   <p className="m-0">{image.description}</p>
                 </div>
               </div>
