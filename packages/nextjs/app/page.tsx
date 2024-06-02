@@ -126,7 +126,7 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <div className="w-full mx-auto px-4 md:px-6">
-        <div className="flex justify-end py-5 md:py-5 space-x-6">
+        <div className="flex justify-end py-5 space-x-6">
           <Search placeholder="Search Artwork" className="w-[610px]" />
           <Sort />
         </div>

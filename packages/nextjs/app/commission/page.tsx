@@ -2,12 +2,17 @@
 
 import { useState } from "react";
 import MultiStepForm from "./MultiStepForm";
+import SuccessModal from "~~/components/steps/SuccessModal";
 
 const LandingPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  const openSuccessModal = () => setIsSuccessModalOpen(true);
+  const closeSuccessModal = () => setIsSuccessModalOpen(false);
 
   return (
     <div className="flex flex-col justify-between mt-60">
@@ -30,7 +35,8 @@ const LandingPage = () => {
           Import Character from Ceptor Club
         </button>
       </div>
-      {isModalOpen && <MultiStepForm isOpen={isModalOpen} onClose={closeModal} />}
+      {isModalOpen && <MultiStepForm isOpen={isModalOpen} onClose={closeModal} onSuccess={openSuccessModal} />}
+      <SuccessModal isOpen={isSuccessModalOpen} onClose={closeSuccessModal} />
     </div>
   );
 };
