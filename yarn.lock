@@ -2052,7 +2052,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomicfoundation/hardhat-network-helpers@npm:^1.0.6":
+"@nomicfoundation/hardhat-ignition-ethers@npm:^0.15.4":
+  version: 0.15.4
+  resolution: "@nomicfoundation/hardhat-ignition-ethers@npm:0.15.4"
+  peerDependencies:
+    "@nomicfoundation/hardhat-ethers": ^3.0.4
+    "@nomicfoundation/hardhat-ignition": ^0.15.4
+    "@nomicfoundation/ignition-core": ^0.15.4
+    ethers: ^6.7.0
+    hardhat: ^2.18.0
+  checksum: f876dbd1afae4420c80dbbc5534fb42c5ca56b32837a6c65148e7c42a1aec770a24df025b5c6039f59ccb709df6b9b1bf7c89a8d3907b47781b2b134c44a43f4
+  languageName: node
+  linkType: hard
+
+"@nomicfoundation/hardhat-network-helpers@npm:^1.0.10, @nomicfoundation/hardhat-network-helpers@npm:^1.0.6":
   version: 1.0.10
   resolution: "@nomicfoundation/hardhat-network-helpers@npm:1.0.10"
   dependencies:
@@ -2060,6 +2073,32 @@ __metadata:
   peerDependencies:
     hardhat: ^2.9.5
   checksum: 675da8d3229946a2bac0df9d1b5cc278bba9cd1a8214b5ff6099dcba874d913df07b9772a2ead0cb7ea2ced6b3fa430a73f94a3e257ae105493931c38fc7bf61
+  languageName: node
+  linkType: hard
+
+"@nomicfoundation/hardhat-toolbox@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@nomicfoundation/hardhat-toolbox@npm:5.0.0"
+  peerDependencies:
+    "@nomicfoundation/hardhat-chai-matchers": ^2.0.0
+    "@nomicfoundation/hardhat-ethers": ^3.0.0
+    "@nomicfoundation/hardhat-ignition-ethers": ^0.15.0
+    "@nomicfoundation/hardhat-network-helpers": ^1.0.0
+    "@nomicfoundation/hardhat-verify": ^2.0.0
+    "@typechain/ethers-v6": ^0.5.0
+    "@typechain/hardhat": ^9.0.0
+    "@types/chai": ^4.2.0
+    "@types/mocha": ">=9.1.0"
+    "@types/node": ">=18.0.0"
+    chai: ^4.2.0
+    ethers: ^6.4.0
+    hardhat: ^2.11.0
+    hardhat-gas-reporter: ^1.0.8
+    solidity-coverage: ^0.8.1
+    ts-node: ">=8.0.0"
+    typechain: ^8.3.0
+    typescript: ">=4.5.0"
+  checksum: 18890eaf1cc130afb7dc83ea48cb6ef23c499eb5d28c3fbb36e706082383a320118ee6d4491ede64acf684d2f1ffa117cf84ad80d8ebde9fa52a443f8780a898
   languageName: node
   linkType: hard
 
@@ -14410,6 +14449,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "se-2@workspace:."
   dependencies:
+    "@nomicfoundation/hardhat-ignition-ethers": ^0.15.4
+    "@nomicfoundation/hardhat-network-helpers": ^1.0.10
+    "@nomicfoundation/hardhat-toolbox": ^5.0.0
     "@types/node": ^20.12.12
     dotenv: ^16.4.5
     hardhat: ^2.22.4
