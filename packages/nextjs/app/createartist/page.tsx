@@ -72,7 +72,7 @@ const CreateArtistUser = () => {
           name="artistName"
           value={formData.artistName}
           onChange={handleChange}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          className="shadow appearance-none border border-[#F8C522] bg-white rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         />
       </div>
 
@@ -90,7 +90,7 @@ const CreateArtistUser = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={createNewArtist}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className="bg-[#F8C522] hover:[#F8C522]/60 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         >
           Save
         </button>
