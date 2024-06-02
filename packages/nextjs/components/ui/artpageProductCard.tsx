@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Modal from "./Modal";
 import { Heart } from "lucide-react";
 
 interface ProductProps {
@@ -18,7 +19,7 @@ interface ProductProps {
   isFavourite: boolean;
 }
 
-const ProductCard = ({
+const ArtPageProductCard = ({
   href,
   imgSrc,
   imgAlt,
@@ -26,11 +27,23 @@ const ProductCard = ({
   tags,
   isAI,
   isFavourite: initialFavourite,
+  artist,
+  title,
+  price,
 }: ProductProps) => {
   const [isFavourite, setIsFavourite] = useState(initialFavourite);
+  const [showModal, setShowModal] = useState(false);
 
   const toggleFavourite = () => {
     setIsFavourite(!isFavourite);
+  };
+
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   return (
@@ -45,7 +58,6 @@ const ProductCard = ({
         src={imgSrc}
         width={267}
       />
-      {/* Display if image is AI or human and add to favorite */}
       <div className="absolute top-2 left-2 right-2 flex justify-between items-center px-2">
         <span className="text-white text-xl py-1 px-2">{isAI ? "AI" : "Human"}</span>
         <button
@@ -56,11 +68,10 @@ const ProductCard = ({
           <Heart className={`w-5 h-5 ${isFavourite ? "fill-white text-white" : "fill-none"}`} />
         </button>
       </div>
-      {/* text display */}
       <div className="flex-1 py-4">
         <div className="flex justify-between">
           <div className="w-[400px]">
-            <p className="font-bold tracking-tight order">{description}</p>
+            <p className="font-bold tracking-tight">{description}</p>
           </div>
         </div>
         <div className="flex flex-wrap gap-4 mt-2">
@@ -70,9 +81,15 @@ const ProductCard = ({
             </span>
           ))}
         </div>
+        <div className="mt-4 relative z-20">
+          <button className="bg-[#F8C522] text-white px-4 py-2 rounded w-full" onClick={openModal}>
+            Buy Artwork
+          </button>
+        </div>
       </div>
+      {showModal && <Modal show={showModal} onClose={closeModal} product={{ price, title, artist }} />}
     </div>
   );
 };
 
-export default ProductCard;
+export default ArtPageProductCard;

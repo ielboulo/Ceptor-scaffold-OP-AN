@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Modal from "./Modal";
+import { Button } from "./button";
 import { Heart } from "lucide-react";
 
 interface ProductProps {
@@ -30,14 +32,23 @@ const ProductCard = ({
   isFavourite: initialFavourite,
 }: ProductProps) => {
   const [isFavourite, setIsFavourite] = useState(initialFavourite);
+  const [showModal, setShowModal] = useState(false);
 
   const toggleFavourite = () => {
     setIsFavourite(!isFavourite);
   };
 
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
   return (
     <div className="relative group">
-      <Link className="absolute inset-0 z-10" href={href}>
+      <Link href={href} className="block w-full h-full absolute inset-0 z-10">
         <span className="sr-only">View</span>
       </Link>
       <Image
@@ -47,7 +58,6 @@ const ProductCard = ({
         src={imgSrc}
         width={267}
       />
-      {/* Display if image is AI or human and add to favorite */}
       <div className="absolute top-2 left-2 right-2 flex justify-between items-center px-2">
         <span className="text-white text-xl py-1 px-2">{isAI ? "AI" : "Human"}</span>
         <button
@@ -58,7 +68,6 @@ const ProductCard = ({
           <Heart className={`w-5 h-5 ${isFavourite ? "fill-white text-white" : "fill-none"}`} />
         </button>
       </div>
-      {/* text display */}
       <div className="flex-1 py-4">
         <div className="flex justify-between">
           <div>
@@ -77,7 +86,13 @@ const ProductCard = ({
             </span>
           ))}
         </div>
+        <div className="mt-4 relative z-20">
+          <Button variant="default" size="lg" className="w-full" onClick={openModal}>
+            Buy Artwork
+          </Button>
+        </div>
       </div>
+      {showModal && <Modal show={showModal} onClose={closeModal} product={{ price, title, artist }} />}
     </div>
   );
 };

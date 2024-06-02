@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Artist from "~~/components/assets/artist.jpg";
 import Pagination from "~~/components/layout/Pagination";
-import ProductCard from "~~/components/ui/artpageProductCard";
+import ArtPageProductCard from "~~/components/ui/ArtpageProductCard";
 import { Button } from "~~/components/ui/button";
 import ProductCard1 from "~~/components/ui/product-card";
 
@@ -123,7 +123,7 @@ export default function Home() {
       <div className="mx-5 md:mx-32">
         <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-4 my-20">
           <div className="flex-shrink-0">
-            <ProductCard
+            <ArtPageProductCard
               key={products[0].artName}
               href={`/${products[0].artName}`}
               imgSrc={products[0].imgSrc}
