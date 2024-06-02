@@ -18,7 +18,7 @@ export default function Home() {
   const { data: artworks, isLoading: artworksLoading } = useScaffoldContractRead({
     contractName: "ArtistMarketPlace",
     functionName: "getArtistArtWorks",
-    args: [artist?.wallet],
+    args: [artist?.artistIndex],
   });
 
   if (artistLoading) {
@@ -62,7 +62,7 @@ export default function Home() {
                   <div className="h-[168px]"></div>
                   {/* button */}
                   <div className="ml-10 w-[400px]">
-                    <Link href="/artistPage">
+                    <Link href={`/artistpage/?id=${artist?.artistIndex}`}>
                       <Button variant="default" size={"lg"} className="w-full text-2xl">
                         Discover More From This Artist
                       </Button>

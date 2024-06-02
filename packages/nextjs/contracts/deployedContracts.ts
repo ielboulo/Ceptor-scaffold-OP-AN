@@ -542,7 +542,7 @@ const deployedContracts = {
       },
     },
     ArtistMarketPlace: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
       abi: [
         {
           inputs: [
@@ -976,9 +976,14 @@ const deployedContracts = {
                   name: "commisions",
                   type: "uint256[]",
                 },
+                {
+                  internalType: "uint256",
+                  name: "artistIndex",
+                  type: "uint256",
+                },
               ],
-              internalType: "struct ArtistMarketPlace.Artist",
-              name: "artist",
+              internalType: "struct ArtistMarketPlace.ArtistResult",
+              name: "artR",
               type: "tuple",
             },
           ],
@@ -1062,9 +1067,9 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "address",
-              name: "wallet",
-              type: "address",
+              internalType: "uint256",
+              name: "index",
+              type: "uint256",
             },
           ],
           name: "getArtistArtWorks",
