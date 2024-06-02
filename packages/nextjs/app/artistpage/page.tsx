@@ -137,22 +137,7 @@ export default function Home() {
           {/* Featured */}
           <div className="flex-1">
             <h1 className="font-milonga text-5xl my-8">Gallery</h1>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-10">
-              {currentProducts.map(product => (
-                <ProductCard
-                  key={product.artName}
-                  href={`/${product.artName}`}
-                  imgSrc={product.imgSrc}
-                  imgAlt={product.imgAlt}
-                  artist={product.artistName}
-                  title={product.artName}
-                  price={product.amount}
-                  tags={product.tags}
-                  isAI={true}
-                  isFavourite={false}
-                />
-              ))}
-            </div>
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-10"></div>
             <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
           </div>
         </div>
