@@ -6,7 +6,7 @@
 
 :root,
 [data-theme] {
-  background: oklch(var(--b2));
+  background: black;
 }
 
 body {
