@@ -88,6 +88,18 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 		uint256[] commisions;
 	}
 
+	struct ArtistResult {
+		address wallet;
+		string email;
+		string name;
+		ArtType style;
+		uint256 numberoFArts;
+		uint256 numberFeaturedTimes;
+		uint256[] artworks;
+		uint256[] commisions;
+		uint256 artistIndex;
+	}
+
 	struct Client {
 		address wallet;
 		string email;
@@ -234,12 +246,24 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 	function displayArtistOfTheDay()
 		public
 		view
-		returns (Artist memory artist)
+		returns (ArtistResult memory artR)
 	{
 		if (s_artist.length == 0) {
-			return artist;
+			return artR;
 		}
-		return s_artist[featuredArtistIndex];
+		Artist memory a = s_artist[featuredArtistIndex];
+		ArtistResult memory artResult = ArtistResult({
+			wallet: a.wallet,
+			email: a.email,
+			name: a.name,
+			style: a.style,
+			numberoFArts: a.numberoFArts,
+			numberFeaturedTimes: a.numberFeaturedTimes,
+			artworks: a.artworks,
+			commisions: a.commisions,
+			artistIndex: featuredArtistIndex
+		});
+		return artResult;
 	}
 
 	function withdrawCommision() public payable nonReentrant {
@@ -254,7 +278,7 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 		}
 	}
 
-	function buyArtWork(uint256 artWorkIndex ) public payable {
+	function buyArtWork(uint256 artWorkIndex) public payable {
 		if (artWorkIndex > s_artworks.length || s_artworks.length == 0) {
 			revert ErrorArtworkNotInTheSuppliedIndex();
 		}
@@ -291,7 +315,7 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 		//save the artwork in the artwork storage
 		s_artworks.push(artwork);
 		uint256 index = s_artworks.length;
-		
+
 		//update the artist works array with the artwork index
 
 		uint256 artistIndexInArray = s_users[artwork.creator].artistID;
@@ -498,26 +522,23 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 	}
 
 	function getArtistArtWorks(
-		address wallet
+		uint index
 	) public view returns (ArtWork[] memory arts) {
-		User memory user = s_users[wallet];
-		if (  s_artist.length == 0 && s_artworks.length ==  0 ){return arts;}
-		
-			Artist memory artist = s_artist[user.artistID];
-			//loop through the artworks
-			ArtWork[] memory artWork = new ArtWork[](artist.artworks.length);
-			console.log("length of artist art ", artist.artworks.length);
-			uint i = 0;
-			for (i; i < artist.artworks.length; i++){
-				console.log("value iof ", i);
-				ArtWork memory art = s_artworks[artist.artworks[i]];
-				artWork[i] = art;
+		if (s_artist.length == 0 && s_artworks.length == 0) {
+			return arts;
+		}
 
-			}
-		
+		Artist memory artist = s_artist[index];
+		//loop through the artworks
+		ArtWork[] memory artWork = new ArtWork[](artist.artworks.length);
+		uint i = 0;
+		for (i; i < artist.artworks.length; i++) {
+			console.log("value iof ", i);
+			ArtWork memory art = s_artworks[artist.artworks[i]];
+			artWork[i] = art;
+		}
 
 		return artWork;
-		
 	}
 
 	receive() external payable {}
