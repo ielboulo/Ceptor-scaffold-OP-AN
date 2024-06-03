@@ -4,34 +4,28 @@ import React, { useState } from "react";
 import { useAccount } from "wagmi";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
-const CreateArtistUser = () => {
+const CreateClientUser = () => {
   const [formData, setFormData] = useState({
     email: "",
-    artistName: "",
-    style: "", //0 or 1
   });
 
   const { address } = useAccount();
 
-  const artist = {
+  const client = {
     wallet: address,
-    name: formData.artistName,
     email: formData.email,
-    style: +formData.style,
-    numberoFArts: BigInt(0),
-    numberFeaturedTimes: BigInt(0),
-    artworks: [],
+    favoriteArts: [] as bigint[],
     commisions: [] as bigint[],
   };
 
   const config = {
     contractName: "ArtistMarketPlace",
-    functionName: "createArtistUser",
-    args: [artist],
+    functionName: "createClientUser",
+    args: [client],
     value: 0,
   } as any;
 
-  const { writeAsync: createArtist, isError, isLoading } = useScaffoldContractWrite(config);
+  const { writeAsync: createClient, isError, isLoading } = useScaffoldContractWrite(config);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = e.target;
@@ -41,19 +35,19 @@ const CreateArtistUser = () => {
     }));
   };
 
-  const createNewArtist = async () => {
-    if (formData.artistName !== "" && formData.style !== "select" && address !== null) {
+  const createNewClient = async () => {
+    if (formData.email !== "" && address !== null) {
       try {
-        await createArtist();
-        alert("new artist created");
+        await createClient();
+        alert("new client created");
       } catch (error) {
-        console.log("Error creating artist.....", error);
+        console.log("Error creating client.....", error);
       }
     }
   };
 
   if (isLoading) {
-    return <p>Creating a new artist......</p>;
+    return <p>Creating a new client......</p>;
   }
 
   if (isError) {
@@ -65,22 +59,8 @@ const CreateArtistUser = () => {
       <h2 className="text-2xl font-bold mb-4">Register Artist</h2>
 
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="artistName">
-          Artist Name
-        </label>
-        <input
-          type="text"
-          id="artistName"
-          name="artistName"
-          value={formData.artistName}
-          onChange={handleChange}
-          className="shadow appearance-none border border-[#F8C522] bg-white rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        />
-      </div>
-
-      <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-          Artist Email
+          Client Email
         </label>
         <input
           type="text"
@@ -92,20 +72,9 @@ const CreateArtistUser = () => {
         />
       </div>
 
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="artistName">
-          Artist Style
-        </label>
-        <select onChange={handleChange}>
-          <option value="select">select style</option>
-          <option value="0">AI</option>
-          <option value="1">Hand Drawn</option>
-        </select>
-      </div>
-
       <div className="flex items-center justify-between">
         <button
-          onClick={createNewArtist}
+          onClick={createNewClient}
           className="bg-[#F8C522] hover:[#F8C522]/60 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         >
           Save
@@ -115,4 +84,4 @@ const CreateArtistUser = () => {
   );
 };
 
-export default CreateArtistUser;
+export default CreateClientUser;
