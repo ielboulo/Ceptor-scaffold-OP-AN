@@ -63,7 +63,7 @@ export default function Home() {
             <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-5 gap-y-10">
               {artworks &&
                 artworks.length &&
-                artworks.map(({ url, artType, cost, creator, owner, likes }, i) => {
+                artworks.map(({ url, artType, cost, creator, owner, likes, index }, i) => {
                   return (
                     <ProductCard
                       key={i}
@@ -73,6 +73,7 @@ export default function Home() {
                       cost={cost}
                       creator={creator}
                       owner={owner}
+                      index={index}
                     />
                   );
                 })}

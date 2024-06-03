@@ -542,7 +542,7 @@ const deployedContracts = {
       },
     },
     ArtistMarketPlace: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
       abi: [
         {
           inputs: [
@@ -1106,8 +1106,13 @@ const deployedContracts = {
                   name: "owner",
                   type: "address",
                 },
+                {
+                  internalType: "uint256",
+                  name: "index",
+                  type: "uint256",
+                },
               ],
-              internalType: "struct ArtistMarketPlace.ArtWork[]",
+              internalType: "struct ArtistMarketPlace.ArtWorkResult[]",
               name: "arts",
               type: "tuple[]",
             },

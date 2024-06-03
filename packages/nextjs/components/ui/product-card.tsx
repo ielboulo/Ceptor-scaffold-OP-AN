@@ -12,9 +12,10 @@ interface ProductProps {
   likes: bigint;
   creator: string;
   owner: string;
+  index?: bigint;
 }
 
-const ProductCard = ({ url, artType, cost, creator, owner }: ProductProps) => {
+const ProductCard = ({ url, artType, cost, creator, owner, index }: ProductProps) => {
   const [showModal, setShowModal] = useState(false);
 
   const openModal = () => {
@@ -57,7 +58,7 @@ const ProductCard = ({ url, artType, cost, creator, owner }: ProductProps) => {
           </Button>
         </div>
       </div>
-      {showModal && <Modal show={showModal} onClose={closeModal} product={{ cost, creator, owner }} />}
+      {showModal && <Modal show={showModal} onClose={closeModal} product={{ cost, owner, index }} />}
     </div>
   );
 };

@@ -77,6 +77,16 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 		address owner;
 	}
 
+	struct ArtWorkResult {
+		string url;
+		ArtType artType;
+		uint256 cost;
+		uint256 likes;
+		address creator;
+		address owner;
+		uint index;
+	}
+
 	struct Artist {
 		address wallet;
 		string email;
@@ -523,19 +533,29 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 
 	function getArtistArtWorks(
 		uint index
-	) public view returns (ArtWork[] memory arts) {
+	) public view returns (ArtWorkResult[] memory arts) {
 		if (s_artist.length == 0 && s_artworks.length == 0) {
 			return arts;
 		}
 
 		Artist memory artist = s_artist[index];
 		//loop through the artworks
-		ArtWork[] memory artWork = new ArtWork[](artist.artworks.length);
+		ArtWorkResult[] memory artWork = new ArtWorkResult[](artist.artworks.length);
 		uint i = 0;
 		for (i; i < artist.artworks.length; i++) {
 			console.log("value iof ", i);
 			ArtWork memory art = s_artworks[artist.artworks[i]];
-			artWork[i] = art;
+			ArtWorkResult memory artResult = ArtWorkResult({
+				url: art.url,
+		        artType: art.artType,
+		    	cost: art.cost,
+				likes: art.likes,
+				creator: art.creator,
+		 		owner: art.owner,
+				index: artist.artworks[i]
+			});
+
+			artWork[i] = artResult;
 		}
 
 		return artWork;
