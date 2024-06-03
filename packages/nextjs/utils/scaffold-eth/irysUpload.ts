@@ -41,7 +41,7 @@ export const uploadData = async (dataToUpload: object) => {
   }
 };
 
-export const uploadFile = async (fileToUpload: File, tags: [{ name: string; value: "" }]) => {
+export const uploadFileToIRYS = async (fileToUpload: File, tags: { name: string; value: string }[]) => {
   const webIrys = (await getWebIrys()) as WebIrys;
   try {
     const receipt = await webIrys.uploadFile(fileToUpload, { tags: tags });
@@ -49,6 +49,35 @@ export const uploadFile = async (fileToUpload: File, tags: [{ name: string; valu
     return receipt.id;
   } catch (e) {
     console.log("Error uploading file ", e);
+  }
+};
+
+const _createFileFromBlob = (blob: Blob, fileName: string): File => {
+  // Create a new File object from the Blob
+  const file = new File([blob], fileName, { type: blob.type });
+  return file;
+};
+
+export const processSelectedImage = async (imageID: string): Promise<File | void> => {
+  const imgElement = document.querySelector<HTMLImageElement>(`#${imageID}`);
+
+  console.log("image element => ", imgElement);
+
+  if (!imgElement) {
+    console.error(`No image element found with the id ${imageID}`);
+    return;
+  }
+  const imgSrc = imgElement.src;
+  try {
+    const response = await fetch(imgSrc);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.statusText}`);
+    }
+    const blob = await response.blob();
+    const file = _createFileFromBlob(blob, "image.png");
+    return file;
+  } catch (e) {
+    console.error("Error processing the selected image", e);
   }
 };
 

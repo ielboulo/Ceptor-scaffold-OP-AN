@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { ethers } from "ethers";
 import { MoveLeft, X } from "lucide-react";
 import Modal from "react-modal";
+import { useAccount } from "wagmi";
 import Step1 from "~~/components/steps/Step1";
 import Step2 from "~~/components/steps/Step2";
 import Step3 from "~~/components/steps/Step3";
@@ -13,6 +15,13 @@ import Step9 from "~~/components/steps/Step9";
 import Step10 from "~~/components/steps/Step10";
 import Step11 from "~~/components/steps/Step11";
 import Step12 from "~~/components/steps/Step12";
+import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { processSelectedImage, uploadFileToIRYS } from "~~/utils/scaffold-eth/irysUpload";
+import { useSearchParams } from "next/navigation";
+
+function objectToTags(obj) {
+  return Object.entries(obj).map(([key, value]) => ({ name: key, value: String(value) }));
+}
 
 const MultiStepForm = ({ isOpen, onClose, onSuccess }) => {
   const [step, setStep] = useState(1);
@@ -30,6 +39,10 @@ const MultiStepForm = ({ isOpen, onClose, onSuccess }) => {
     referenceImages: { selectedOptions: [], description: "" },
   });
 
+  const walletParams = useSearchParams();
+
+  const wallet = walletParams.get("wallet");
+
   const totalSteps = 12;
   const titles = [
     "Image Type",
@@ -46,6 +59,26 @@ const MultiStepForm = ({ isOpen, onClose, onSuccess }) => {
     "Review",
   ];
 
+  const { address } = useAccount();
+
+  const artsCommision = {
+    client: address,
+    artist: wallet,
+    description: "",
+    budget: ethers.parseEther("0.5"), //should be set by the client
+    contractStatus: 0,
+    taskProgress: [],
+  };
+
+  const config = {
+    contractName: "ArtistMarketPlace",
+    functionName: "startNewArtCommision",
+    args: [artsCommision],
+    value: ethers.parseEther("0.5"),
+  };
+
+  const { writeAsync: saveNewArtCommission } = useScaffoldContractWrite(config);
+
   const handleDataChange = stepData => {
     setFormData(prevData => ({ ...prevData, ...stepData }));
   };
@@ -59,32 +92,46 @@ const MultiStepForm = ({ isOpen, onClose, onSuccess }) => {
   };
 
   const handleSubmit = () => {
-    const metadata = {
-      data: formData,
-      timestamp: new Date().toISOString(),
-      author: "formSubmissionApp",
-      tags: ["userData", "formSubmission"],
-    };
-    sendMetadataToIrys(metadata);
+    // const metadata = {
+    //   data: formData,
+    // };
+    const tags = objectToTags(formData);
+    sendMetadataToIrys("selected-image", tags);
     onClose();
     onSuccess(); // Trigger the onSuccess callback
   };
 
-  const sendMetadataToIrys = metadata => {
-    fetch("https://...", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(metadata),
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log("Success:", data);
-      })
-      .catch(error => {
-        console.error("Error:", error);
-      });
+  const sendMetadataToIrys = async (imageID, metadata) => {
+    try {
+      if (address !== null) {
+        const imageFile = await processSelectedImage(imageID);
+        if (!imageFile) {
+          return;
+        }
+        const commissionTags = [
+          { name: "application-id", value: "artistMarketPlace" },
+          { name: "artistWallet", value: wallet },
+          { name: "clientWallet", value: address },
+          { name: "Content-Type", value: imageFile.type },
+        ];
+        //upload the image to IRYS
+        const tags = [...commissionTags, ...metadata];
+        const receiptID = await uploadFileToIRYS(imageFile, tags);
+        if (!receiptID) {
+          throw new Error("Failed uploading to IRYS ", receiptID);
+        }
+        const imageURL = `${receiptID}`;
+        // //update the artcommission description
+        //https://gateway.irys.xyz/${receiptID}
+        artsCommision.description = imageURL;
+        console.log("receiptID", imageURL);
+        //create the transaction and write to the blockchain
+
+        await saveNewArtCommission();
+      }
+    } catch (error) {
+      console.log("Error saving art commission => ", error);
+    }
   };
 
   return (
