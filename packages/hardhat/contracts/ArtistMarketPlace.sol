@@ -12,6 +12,9 @@ import "hardhat/console.sol";
 contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 	event RequestSent(uint256 requestId, uint32 numWords);
 	event RequestFulfilled(uint256 requestId, uint256[] randomWords);
+        
+        event ArtWorkBuySuccess(address _newOwner, uint256 _artworkIndex);
+	event ArtWorkBuySuccessFromAmoy(address _newOwner, uint256 _artworkIndex);
 
 	error ErrorNoCommisionToWithdraw();
 	error ErrorArtWorkNotFound();
@@ -143,6 +146,8 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 	mapping(uint256 => RequestStatus) public s_requests;
 	//artist address matched to artist commision held by the contract
 	mapping(address => uint256) public s_artistCommision;
+	mapping(address => uint256) public s_artistCommisionInArtToken;
+
 	//mapping of address to Artist array index
 	//mapping(address => uint) public s_artistIndex;
 	//artwork
@@ -288,7 +293,19 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 		}
 	}
 
-	function buyArtWork(uint256 artWorkIndex) public payable {
+	// Overloaded function without the payWithArtToken parameter, defaults to false
+    function buyArtWork(uint256 artWorkIndex) public payable {
+        buyArtWork(msg.sender, artWorkIndex, false);
+    }
+
+	// Overloaded function without the payWithArtToken parameter, defaults to false
+    function buyArtWorkCCIP(address _owner, uint256 _amountArtToken, uint256 artWorkIndex) external payable {
+		artTokenAddr.mint(_owner, _amountArtToken);
+		buyArtWork(_owner, artWorkIndex, true);
+
+	}
+
+	function buyArtWork(address _owner, uint256 artWorkIndex, bool payWithArtToken) public payable {
 		if (artWorkIndex > s_artworks.length || s_artworks.length == 0) {
 			revert ErrorArtworkNotInTheSuppliedIndex();
 		}
@@ -296,28 +313,46 @@ contract ArtistMarketPlace is ReentrancyGuard, VRFConsumerBaseV2Plus {
 		if (artwork.creator == address(0)) {
 			revert ErrorArtWorkNotFound();
 		}
-		if (msg.value < artwork.cost) {
+		/*if (msg.value < artwork.cost) {
 			revert ErrorAmountNotSufficientToBuyArtwork(
 				msg.value,
 				artwork.cost
 			);
-		}
+		}*/
 		//create a client if it does not exist
-		if (s_users[msg.sender].wallet == address(0)) {
+		if (s_users[_owner].wallet == address(0)) {
 			uint256[] memory empty;
 			//create a new Client
 			Client memory _client = Client({
-				wallet: msg.sender,
-				email: "",
+				wallet: _owner,
 				favoriteArts: empty,
 				commisions: empty
 			});
 			createClientUser(_client);
 		}
 		//buy the art
-		s_artworks[artWorkIndex].owner = msg.sender;
-		s_artistCommision[artwork.creator] += msg.value;
+		s_artworks[artWorkIndex].owner = _owner;
+		//s_artistCommision[artwork.creator] += msg.value;
+
+		if (payWithArtToken) {
+            // Paying with Art Token
+			// Assume cost is set in Avax units ==> convert into Art Token 
+            uint256 costInArtToken = priceArtToken.tokenAmount(artwork.cost); // Assume cost is set in Art Token units
+            require(artTokenAddr.transferFrom(_owner, address(this), costInArtToken), "ErrorArtTokenTransferFailed");
+            s_artistCommisionInArtToken[artwork.creator] += costInArtToken;
+			
+			emit ArtWorkBuySuccessFromAmoy(_owner, artWorkIndex); 
+
+        } else {
+            // Paying with AVAX
+            if (msg.value < artwork.cost) {
+                revert("ErrorAmountNotSufficientToBuyArtwork");
+            }
+            s_artistCommision[artwork.creator] += msg.value;
+			emit ArtWorkBuySuccess(_owner, artWorkIndex); 
+        }
 	}
+
 
 	function saveArtWorkDetails(
 		ArtWork memory artwork
