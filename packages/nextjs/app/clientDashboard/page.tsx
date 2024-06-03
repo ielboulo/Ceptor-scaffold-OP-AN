@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Modal from "./modals/CommissionModal";
-import Artwork1 from "~~/components/assets/artwork/artwork1.png";
-import Artwork2 from "~~/components/assets/artwork/artwork2.png";
-import Artwork3 from "~~/components/assets/artwork/artwork3.png";
-import Artwork4 from "~~/components/assets/artwork/artwork4.png";
+import Artwork1 from "~~/components/assets/artwork/artwork1.jpg"
+import Artwork2 from "~~/components/assets/artwork/artwork2.jpg";
+import Artwork3 from "~~/components/assets/artwork/artwork3.jpg";
+import Artwork4 from "~~/components/assets/artwork/artwork4.jpg";
 import SuccessImage from "~~/components/assets/successImage.png";
 import { Button } from "~~/components/ui/button";
 
