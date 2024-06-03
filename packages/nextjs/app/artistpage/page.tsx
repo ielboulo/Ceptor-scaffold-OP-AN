@@ -48,7 +48,7 @@ export default function Home() {
             <div className="h-[168px]"></div>
             {/* button */}
             <div className="ml-10 w-[400px]">
-              <Link href="/commission">
+              <Link href={`/commission/?wallet=${artist?.wallet}`}>
                 <Button variant="default" size={"lg"} className="w-full text-2xl">
                   Commission This Artist
                 </Button>
