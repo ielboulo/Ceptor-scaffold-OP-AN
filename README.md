@@ -1,10 +1,27 @@
 
 
+# Ceptor's Scroll of Artistry - Video Presentation
 
 https://github.com/user-attachments/assets/0dd78740-601b-4a84-a1f3-5d33b1a9efdf
 
 
+# Ceptor's Scroll of Artistry - Summary
 
+Ceptor Club uses AI image generation to allow tabletop role-playing gamers and game masters to create art as needed for their games. Recognizing the immense potential of this technology, we wanted to expand Ceptor Club's offerings by enabling players to hire human artists and support artists in making a living through creating fantasy art.
+
+Ceptor’s Scroll of Artistry is a marketplace where artists can showcase their Tabletop Role-Playing Game (TTRPG) art, and fans can easily buy or commission pieces of their characters using smart contracts. This feature not only leverages AI for immediate art needs but also connects gamers with talented human artists for custom, high-quality commissions.
+
+# Ceptor's Scroll of Artistry - The Team
+
+Leom (based in Nigeria) : Frontend expert who have made a huge effort in providing the needed pages with the expected designs.
+
+James (based in Nigeria) : Smart Contract expert who ensured the robustness of our blockchain interactions.
+
+Wright (based in USA) : User Experience and User Interface designer, who took time to interview artists and to collect their needs. Thanks to his creativity, the team got high-quality mockups and prototypes.
+
+Ilham (based in France) : Project Manager and Smart Contract Developer. She coordinated team efforts, prioritized tasks, and facilitated issue resolution. She contributed to the implementation of Chainlink CCIP, Data Price Feeds, and Chainlink Functions for seamless cross-chain transactions and fair pricing.
+
+Our team, spread across three continents and just as many time zones, came together with a common goal, resulting in a well-coordinated and efficient project.
 
 <div align="center">
   <a href="https://optimism.io"><img alt="Optimism" src="https://raw.githubusercontent.com/ethereum-optimism/brand-kit/main/assets/svg/OPTIMISM-R.svg" width=320></a>
